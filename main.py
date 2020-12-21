@@ -19,6 +19,8 @@ def redrawGameWindow(win):
     win.blit(bg, (0, 0))
     for player in player_list:
         player.draw(win)
+        for bullet in player.bullet_list:
+            bullet.draw(win)
     for enemy in enemy_list:
         enemy.draw(win)
     pygame.display.update()
@@ -74,27 +76,32 @@ for i in range(N):
 
 # main loop
 run = [True]
+player_selection = ["1P", "2P"]
 while run[0]:
     clock.tick(60) # Set FPS
 
-    # Check if the window is closed
+    # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
             run[0] = False 
         elif event.type == CREATE_ENEMY_EVENT:
             # This will create enemy every 0.2 sec
-            enemy_list.append(Enemy(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 576//9, 256//4))
+            enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
             enemy_list[-1].target = random.randrange(0, len(player_list), 1)
 
     checkEnemyEnemyCollision()
+
     # Moving the player with "WASD"
-    player_selection = ["1P", "2P"]
     for i, player in enumerate(player_list):
         checkPlayEnemyCollision(player)
         player.control(run, win_width, win_height, player_selection[i])
-
-    print(len(player_list))
-
+        for bullet in player.bullet_list:
+            bullet.fly()
+            if bullet.out(win_width, win_height):
+                player.bullet_list.pop(player.bullet_list.index(bullet))
+                
+    # print(len(player_list))
+        print(len(player.bullet_list))
     redrawGameWindow(win)
 
 pygame.quit()

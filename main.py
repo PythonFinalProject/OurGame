@@ -99,9 +99,20 @@ while run[0]:
             bullet.fly()
             if bullet.out(win_width, win_height):
                 player.bullet_list.pop(player.bullet_list.index(bullet))
+                continue
+
+            for enemy in enemy_list:
+                enemy_hb_0 = enemy.hitbox[0]
+                enemy_hb_1 = enemy.hitbox[1]
+                enemy_hb_2 = enemy.hitbox[2]
+                enemy_hb_3 = enemy.hitbox[3]
+                if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
+                    player.bullet_list.pop(player.bullet_list.index(bullet))
+                    enemy_list.pop(enemy_list.index(enemy))
+                    break
                 
     # print(len(player_list))
-        print(len(player.bullet_list))
+        # print(len(player.bullet_list))
     redrawGameWindow(win)
 
 pygame.quit()

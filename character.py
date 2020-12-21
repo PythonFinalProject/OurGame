@@ -57,7 +57,7 @@ class Player(Character):
         self.right = True
         self.set_hitbox(15, 5, 594//9 - 35, 261//4 - 10)
         self.extract_from_sprite_sheet('Game/blue_woman_sprite.png', 4, 9)
-        self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "up": pygame.K_UP, "down": pygame.K_DOWN, "shoot": pygame.K_SLASH}}
+        self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
         self.bullet_list = []
 
     def control(self, run, win_width, win_height, num_player):
@@ -133,7 +133,8 @@ class Player(Character):
     def draw(self, win, frames=3):
         super().draw(win, frames)
         self.set_hitbox(15, 5, 594//9 - 35, 261//4 - 10)
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # draw hitbox
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
         self.health -= 1
@@ -165,8 +166,8 @@ class Enemy(Character):
         self.target = None
         self.set_hitbox(15, 10, 576//9 - 35, 256//4 - 10)
         self.extract_from_sprite_sheet('Game/skull_sprite.png', 4, 9)
-        self.vel = 3
-        pygame.time.set_timer(CREATE_ENEMY_EVENT, 3000) # Create enemy every 1 sec
+        self.vel = 1
+        pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)
@@ -206,7 +207,8 @@ class Enemy(Character):
     def draw(self, win, frames=3):
         super().draw(win, frames)
         self.set_hitbox(15, 10, 576//9 - 35, 256//4 - 10)
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # draw hitbox
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
     def __init__(self, x, y, facing, radius=6, color=(0, 0, 0), vel=8):

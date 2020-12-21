@@ -1,5 +1,8 @@
 # OurGame
 
+## Quick View
+![](https://i.imgur.com/zZ4BIQO.png)
+
 ## File structure
 ```
 .

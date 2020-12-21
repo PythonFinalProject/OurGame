@@ -1,5 +1,7 @@
 # OurGame
 
+## Quick View
+
 ## File structure
 ```
 .

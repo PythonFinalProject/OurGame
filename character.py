@@ -56,7 +56,7 @@ class Player(Character):
         super().__init__(x, y, width, height)
         self.right = True
         self.set_hitbox(15, 5, self.width-35, self.height-10)
-        self.extract_from_sprite_sheet('Game/blue_woman_sprite.png', 4, 9)
+        self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', 4, 9)
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
         self.bullet_list = []
         self.shootLoop = 0
@@ -168,7 +168,7 @@ class Enemy(Character):
         super().__init__(x, y, width, height)
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
-        self.extract_from_sprite_sheet('Game/skull_sprite.png', 4, 9)
+        self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.vel = 1
         pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
     

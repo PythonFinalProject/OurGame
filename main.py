@@ -12,7 +12,7 @@ clock = pygame.time.Clock()
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
 
-bg = pygame.image.load('Game/bg.jpg')
+bg = pygame.image.load('materials/bg.jpg')
 
 
 def redrawGameWindow(win):

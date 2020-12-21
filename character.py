@@ -55,10 +55,12 @@ class Player(Character):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height)
         self.right = True
-        self.set_hitbox(15, 5, 594//9 - 35, 261//4 - 10)
+        self.set_hitbox(15, 5, self.width-35, self.height-10)
         self.extract_from_sprite_sheet('Game/blue_woman_sprite.png', 4, 9)
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
         self.bullet_list = []
+        self.shootLoop = 0
+        self.shootCoolDown = 5
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -124,7 +126,8 @@ class Player(Character):
             self.down = True
 
         if keys[player_control["shoot"]]:
-            self.shoot()
+            if self.shootLoop == 0:
+                self.shoot()
         if keys[pygame.K_q]:
             run[0] = False
 
@@ -132,9 +135,9 @@ class Player(Character):
 
     def draw(self, win, frames=3):
         super().draw(win, frames)
-        self.set_hitbox(15, 5, 594//9 - 35, 261//4 - 10)
+        self.set_hitbox(15, 5, self.width - 35, self.height - 10)
         # draw hitbox
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
         self.health -= 1
@@ -157,14 +160,14 @@ class Player(Character):
             facing[1] = 1
         # if (self.right or self.left) and (self.up or self.down):
         #     facing = [x*(2**0.5) for x in facing]
-        self.bullet_list.append(Bullet(x=self.x, y=self.y, facing=facing))
+        self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing))
 
 # 576*256
 class Enemy(Character):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height)
         self.target = None
-        self.set_hitbox(15, 10, 576//9 - 35, 256//4 - 10)
+        self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('Game/skull_sprite.png', 4, 9)
         self.vel = 1
         pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
@@ -206,9 +209,9 @@ class Enemy(Character):
 
     def draw(self, win, frames=3):
         super().draw(win, frames)
-        self.set_hitbox(15, 10, 576//9 - 35, 256//4 - 10)
+        self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         # draw hitbox
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
     def __init__(self, x, y, facing, radius=6, color=(0, 0, 0), vel=8):

@@ -61,6 +61,11 @@ def checkEnemyEnemyCollision():
         if collision == False:
             first.chase(player_list[first.target])
 
+def playerUpdate(player_list):
+    for player in player_list:
+        player.shootLoop += 1
+        if player.shootLoop >= player.shootCoolDown:
+            player.shootLoop = 0
 # Initialize player
 # player = Player(300, 410, 591//9, 261//4)
 player_list = []
@@ -113,6 +118,7 @@ while run[0]:
                 
     # print(len(player_list))
         # print(len(player.bullet_list))
+    playerUpdate(player_list)
     redrawGameWindow(win)
 
 pygame.quit()

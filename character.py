@@ -137,7 +137,7 @@ class Player(Character):
         super().draw(win, frames)
         self.set_hitbox(15, 5, self.width - 35, self.height - 10)
         # draw hitbox
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
         self.health -= 1
@@ -211,7 +211,7 @@ class Enemy(Character):
         super().draw(win, frames)
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         # draw hitbox
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
     def __init__(self, x, y, facing, radius=6, color=(0, 0, 0), vel=8):

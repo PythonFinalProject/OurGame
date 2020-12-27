@@ -60,7 +60,7 @@ class Player(Character):
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
         self.bullet_list = []
         self.shootLoop = 0
-        self.shootCoolDown = 5
+        self.shootCoolDown = 1
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -169,7 +169,7 @@ class Enemy(Character):
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
-        self.vel = 1
+        self.vel = 10
         pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
     
     def chase(self, player):
@@ -237,3 +237,12 @@ class Bullet():
     
     def hit(self):
         pass
+
+class Button():
+    def __init__(self, color, x, y, width, height, text=""):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text

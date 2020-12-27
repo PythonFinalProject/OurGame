@@ -4,15 +4,15 @@ from character import Player, Enemy
 
 pygame.init()
 
-win_width = 480
-win_height = 480
+win_width = 960
+win_height = 960
 win = pygame.display.set_mode((win_width, win_height))
 pygame.display.set_caption('First Game')
 clock = pygame.time.Clock()
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
 
-bg = pygame.image.load('materials/bg.jpg')
+bg = pygame.image.load('materials/bg_large.png')
 
 
 def redrawGameWindow(win):
@@ -66,6 +66,7 @@ def playerUpdate(player_list):
         player.shootLoop += 1
         if player.shootLoop >= player.shootCoolDown:
             player.shootLoop = 0
+
 # Initialize player
 # player = Player(300, 410, 591//9, 261//4)
 player_list = []
@@ -83,7 +84,7 @@ for i in range(N):
 run = [True]
 player_selection = ["1P", "2P"]
 while run[0]:
-    clock.tick(60) # Set FPS
+    clock.tick(90) # Set FPS
 
     # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
     for event in pygame.event.get(): 

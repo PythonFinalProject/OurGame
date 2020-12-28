@@ -28,6 +28,9 @@
 
 
 ## Bug and Problem report
+- ZeroDivisionError: float division by zero (12/27):
+    - seldom happened.  In character.py,line 183,  self.x += self.vel*dx/dl     dl = 0???
+
 - python pass by value or reference (12/21):
     - In order to force python pass the variable "run" as reference, Nelson set "run" as a list "[True]"
 

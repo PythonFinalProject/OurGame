@@ -10,7 +10,8 @@ class Character():
         self.width = width
         self.height = height
         self.vel = 3
-        self.health = 100
+        self.health = 5
+        self.healthmax = self.health  #繪製血條用
         self.up = False
         self.down = False
         self.left = False
@@ -58,9 +59,11 @@ class Player(Character):
         self.set_hitbox(15, 5, self.width-35, self.height-10)
         self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', 4, 9)
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
+        #self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "up": pygame.K_UP, "down": pygame.K_DOWN, "shoot": pygame.K_SLASH}}
         self.bullet_list = []
         self.shootLoop = 0
-        self.shootCoolDown = 1
+        self.shootCoolDown = 5
+        self.cold_time = 0    #12.26新增 受傷冷卻時間
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -134,33 +137,36 @@ class Player(Character):
         # print("right", self.right, "left", self.left, "up", self.up, "down", self.down)
 
     def draw(self, win, frames=3):
-        super().draw(win, frames)
-        self.set_hitbox(15, 5, self.width - 35, self.height - 10)
-        # draw hitbox
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        if self.health > 0: 
+            super().draw(win, frames)
+            self.set_hitbox(15, 5, self.width - 35, self.height - 10)
+            # draw hitbox
+            # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
-        self.health -= 1
-        # print(self.health)
-        # font1 = pygame.font.SysFont('comicsans', 100)
-        # text = font1.render("hit", 1, (255, 0, 0))
-        # # print(self.health)
-        # win.blit(text, ((win_width - text.get_width()) // 2, (win_height - text.get_height()) // 2))
-        # pygame.display.update()
+        if self.health > 0: 
+            self.health -= 1
+            # print(self.health)
+            # font1 = pygame.font.SysFont('comicsans', 100)
+            # text = font1.render("hit", 1, (255, 0, 0))
+            # # print(self.health)
+            # win.blit(text, ((win_width - text.get_width()) // 2, (win_height - text.get_height()) // 2))
+            # pygame.display.update()
 
     def shoot(self):
-        facing = [0, 0]
-        if self.right:
-            facing[0] = 1
-        elif self.left:
-            facing[0] = -1
-        if self.up:
-            facing[1] = -1
-        elif self.down:
-            facing[1] = 1
-        # if (self.right or self.left) and (self.up or self.down):
-        #     facing = [x*(2**0.5) for x in facing]
-        self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing))
+        if self.health > 0: 
+            facing = [0, 0]
+            if self.right:
+                facing[0] = 1
+            elif self.left:
+                facing[0] = -1
+            if self.up:
+                facing[1] = -1
+            elif self.down:
+                facing[1] = 1
+            # if (self.right or self.left) and (self.up or self.down):
+            #     facing = [x*(2**0.5) for x in facing]
+            self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing))
 
 # 576*256
 class Enemy(Character):
@@ -169,8 +175,8 @@ class Enemy(Character):
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
-        self.vel = 10
-        pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
+        self.vel = 1
+        pygame.time.set_timer(CREATE_ENEMY_EVENT, 2000) # Create enemy every 1 sec
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)
@@ -178,7 +184,7 @@ class Enemy(Character):
         dl = (dx**2 + dy**2)**0.5
         self.x += self.vel*dx/dl
         self.y += self.vel*dy/dl
-        
+       
         if dx > 0:
             self.right = True
             self.left = False
@@ -237,12 +243,3 @@ class Bullet():
     
     def hit(self):
         pass
-
-class Button():
-    def __init__(self, color, x, y, width, height, text=""):
-        self.color = color
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.text = text

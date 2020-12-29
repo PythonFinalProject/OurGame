@@ -119,7 +119,8 @@ while to_run:
             # print(player.explode_list)
             for explosion in player.explode_list:
                 explosion.draw(win,player)
-                player.explode_list.pop(player.explode_list.index(explosion))
+                if explosion.remove == True:
+                    player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
             enemy.draw(win)
         

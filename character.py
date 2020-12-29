@@ -6,6 +6,7 @@ import threading
 
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
+CREATE_COCONUT_EVENT = pygame.USEREVENT + 1
 
 class Character():
     def __init__(self, x, y, width, height):
@@ -20,10 +21,12 @@ class Character():
         self.down = False
         self.left = False
         self.right = False
-        self.walk_up = []
-        self.walk_down = []
-        self.walk_left = []
-        self.walk_right = []
+        # self.walk_up = []
+        # self.walk_down = []
+        # self.walk_left = []
+        # self.walk_right = []
+        # self.walk_sheet = []
+        # self.hitbox = None
         self.walk_pause = None
         self.walkcount = 0
     
@@ -32,11 +35,18 @@ class Character():
 
     def extract_from_sprite_sheet(self, image_source, dir, steps):
         sprite_sheet = pygame.image.load(image_source)
+        self.walk_sheet = []
+        self.walk_up = []
+        self.walk_down = []
+        self.walk_right = []
+        self.walk_left = []
         self.walk_sheet = [self.walk_up, self.walk_left, self.walk_down, self.walk_right]
         for i in range(dir):
             for  j in range(steps):
                 self.walk_sheet[i].append(sprite_sheet.subsurface((self.width*j, self.height*i, self.width, self.height)))
         self.walk_pause = self.walk_sheet[2][0]
+
+        # self.walk_sheet[0][0] = pygame.transform.scale(self.walk_sheet[0][0], (20, 20))
     
     def draw(self, win, frames=3):
         if self.walkcount + 1 >= frames*9:
@@ -61,7 +71,9 @@ class Player(Character):
         super().__init__(x, y, width, height)
         self.right = True
         self.set_hitbox(15, 5, self.width-35, self.height-10)
-        self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', 4, 9)
+        self.DIR = 4
+        self.STEP = 9
+        self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
         self.bullet_list = []
         self.cold_time = 0    #12.26新增 受傷冷卻時間
@@ -74,6 +86,9 @@ class Player(Character):
         self.explode_list = []
         self.weapon_list = ["pistol","shotgun","bomb"]
         self.weapon = "bomb"
+        self.is_super_man = False
+        self.is_enlarged = False
+        self.is_medium = True
  
  
 
@@ -158,13 +173,38 @@ class Player(Character):
             run[0] = False
 
         # print("right", self.right, "left", self.left, "up", self.up, "down", self.down)
-            
+    
+    def enlarge(self):
+        if not self.is_enlarged:
+            self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
+            for i in range(self.DIR):
+                for j in range(self.STEP):
+                    self.walk_sheet[i][j] = pygame.transform.scale(self.walk_sheet[i][j], (100, 100))
+            self.set_hitbox(15, 8, int(self.width*0.8), int(self.height*1.2))
+        elif self.is_enlarged:
+            pass
+
+    def medium(self):
+        if not self.is_medium:
+            self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
+            # self.set_hitbox(15, 5, self.width-35, self.height-10)
+            # for i in range(self.DIR):
+            #     for j in range(self.STEP):
+            #         self.walk_sheet[i][j] = pygame.transform.scale(self.walk_sheet[i][j], (10, 10))
+            self.set_hitbox(-150, -5, self.width*5, self.height*5)
+
+        elif self.is_medium:
+            pass
+
     def draw(self, win, frames=3):
         if self.health > 0: 
             super().draw(win, frames)
-            self.set_hitbox(15, 5, self.width - 35, self.height - 10)
+            if self.is_medium:
+                self.set_hitbox(15, 5, self.width - 35, self.height - 10)
+            elif self.is_enlarged:
+                self.set_hitbox(15, 8, int(self.width*0.8), int(self.height*1.2))
             # draw hitbox
-            # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+            pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
         if self.health > 0: 
@@ -189,7 +229,6 @@ class Player(Character):
                 facing[1] = -1
             elif self.down:
                 facing[1] = 1
-
 
             # if (self.right or self.left) and (self.up or self.down):
             #     facing = [x*(2**0.5) for x in facing]
@@ -324,7 +363,58 @@ class Explosion():
                 # player.explode_list = []
                 return None
 
+class Coconut():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 40
+        self.height = 40
+        self.offset = 8
+        self.ignited = False
+        self.read_image()
+        self.surprise_list = ["revert walking", "super man"]
+        pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
+        self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
+    def read_image(self):
+        img = pygame.image.load('./materials/coconut.png')
+        self.img = pygame.transform.scale(img, (self.width, self.height))
+
+    def create_surprise(self, player):
+        self.ignited = True
+        self.tracked_player = player
+        self.surprise = random.choice(self.surprise_list)
+        self.SURPRISE_TIME_TICK = 300
+        self.surprise_count = 0
+        self.update_surprise()
+    
+    def update_surprise(self):
+        # print(id(self.tracked_player.walk_sheet[0]))
+        self.surprise_count += 1
+        if self.surprise == "revert walking":
+            self.tracked_player.player_selection = {"1P": {"left": pygame.K_d, "right": pygame.K_a, "up": pygame.K_s, "down": pygame.K_w, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_l, "right": pygame.K_j, "up": pygame.K_k, "down": pygame.K_i, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
+        elif self.surprise == "super man":
+            self.tracked_player.is_super_man = True
+            self.tracked_player.enlarge()
+            self.tracked_player.is_enlarged = True
+            self.tracked_player.is_medium = False
+            # for i in range(len(self.tracked_player.walk_left)):
+            #     pygame.transform.scale(self.tracked_player.walk_left[i], (20, 20))
+    
+    def remove_surprise(self):
+        if self.surprise == 'revert walking':
+            self.tracked_player.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
+        elif self.surprise == 'super man':
+            self.tracked_player.is_super_man = False
+            self.tracked_player.medium()
+            self.tracked_player.is_enlarged = False
+            self.tracked_player.is_medium = True
+
+    def draw(self, win):
+        if not self.ignited:
+            win.blit(self.img, (self.x, self.y))
+        # draw hitbox
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 Weapon_dict= {
     "pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},

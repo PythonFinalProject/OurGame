@@ -1,7 +1,7 @@
 import pygame
 import random
 from random import choice 
-from character import Player, Enemy, Explosion
+from character import Player, Enemy, Explosion, Coconut
 import threading
 
 win_width = 480
@@ -80,6 +80,7 @@ while to_run:
     font2 = pygame.font.SysFont("simhei", 20)   #score 
 
     CREATE_ENEMY_EVENT = pygame.USEREVENT
+    CREATE_COCONUT_EVENT = pygame.USEREVENT + 1
 
     # Initialize player
     # player = Player(300, 410, 591//9, 261//4)
@@ -95,6 +96,8 @@ while to_run:
         enemy_list.append(Enemy(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 576//9, 256//4))
         enemy_list[i].target = random.randrange(0, len(player_list), 1)
 
+    coconut_list = []
+    coconut_list.append(Coconut(222, 222))
     bg = pygame.image.load('./materials/bg.jpg')
     bg.convert()
 
@@ -125,6 +128,9 @@ while to_run:
         for enemy in enemy_list:
             enemy.draw(win)
         
+        for coconut in coconut_list:
+            coconut.draw(win)
+        
         text2 = font2.render("score:%d" %score, True, (0,0,0),(255,255,255))  #畫出分數
         win.blit(text2, (0, 0))   
         
@@ -142,10 +148,27 @@ while to_run:
             enemy_hb_2 = enemy.hitbox[2]
             enemy_hb_3 = enemy.hitbox[3]
             if player_hb_1 + player_hb_3 > enemy_hb_1 and player_hb_1 < enemy_hb_1 + enemy_hb_3 and player_hb_0 + player_hb_2 > enemy_hb_0 and player_hb_0 < enemy_hb_0 + enemy_hb_2:
-                if player.cold_time >130: # 受傷忍卻時間
-                    player.cold_time = 0 # 重新計時
-                    player.hit()
-                    
+                if player.is_super_man == False:
+                    if player.cold_time > 130: # 受傷忍卻時間
+                        player.cold_time = 0 # 重新計時
+                        player.hit()
+                elif player.is_super_man == True:
+                    enemy_list.pop(enemy_list.index(enemy))
+    
+    def checkPlayerCoconutCollision(player):
+        player_hb_0 = player.hitbox[0]
+        player_hb_1 = player.hitbox[1]
+        player_hb_2 = player.hitbox[2]
+        player_hb_3 = player.hitbox[3]
+        for coconut in coconut_list:
+            coconut_hb_0 = coconut.hitbox[0]
+            coconut_hb_1 = coconut.hitbox[1]
+            coconut_hb_2 = coconut.hitbox[2]
+            coconut_hb_3 = coconut.hitbox[3]
+            if not coconut.ignited and player_hb_1 + player_hb_3 > coconut_hb_1 and player_hb_1 < coconut_hb_1 + coconut_hb_3 and player_hb_0 + player_hb_2 > coconut_hb_0 and player_hb_0 < coconut_hb_0 + coconut_hb_2:
+                coconut.create_surprise(player)
+                
+
 
     def checkEnemyEnemyCollision():
         for i in range(len(enemy_list)-1, -1, -1):
@@ -185,13 +208,30 @@ while to_run:
             if player.switchLoop >= player.switchCoolDown:
                 player.switchLoop =0 
                 player.switchAvailabe = True
+            # if player.is_enlarged:
+            #     player.enlarge()
+            # elif not player.is_enlarged:
+            #     player.medium()
+
+    def coconutUpdate(coconut_list):
+        for coconut in coconut_list:
+            if coconut.ignited == True:
+                print(coconut.surprise)
+                coconut.update_surprise()
+                if coconut.surprise_count > coconut.SURPRISE_TIME_TICK:
+                    coconut.remove_surprise()
+                    coconut_list.pop(coconut_list.index(coconut))
+
+
+
     
     run = [True]
     score = 0 # 分數
 
     player_selection = ["1P", "2P"]
     while run[0]:
-        # print("in main loop", score)
+        # for player in player_list:
+            # print(id(player.walk_sheet[0]))
         clock.tick(60) # Set FPS
            
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
@@ -204,6 +244,8 @@ while to_run:
                 # This will create enemy every 0.2 sec
                 enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
                 enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+            elif event.type == CREATE_COCONUT_EVENT:
+                coconut_list.append(Coconut(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1)))
         if len(target_player) == 0: # 如果沒有目標 退出遊戲
             run[0] = False
             pygame.time.wait(1000) # 短暫暫停
@@ -212,8 +254,9 @@ while to_run:
         #print("new")
         # Moving the player with "WASD"
         for i, player in enumerate(player_list):
-            print(player.shootLoop)
+            # print(player.shootLoop)
             checkPlayerEnemyCollision(player)
+            checkPlayerCoconutCollision(player)
             
             if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
                 target_player.remove(i)  
@@ -244,6 +287,7 @@ while to_run:
         # print(len(player_list))
             # print(len(player.bullet_list))
         playerUpdate(player_list)
+        coconutUpdate(coconut_list)
         redrawGameWindow(win)
         
     """"""  #結束畫面

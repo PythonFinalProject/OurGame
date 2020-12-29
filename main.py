@@ -1,18 +1,17 @@
 import pygame
-import random
-from character import Player, Enemy
+import random 
+from character import Player, Enemy, Explosion
 
 pygame.init()
-
-win_width = 960
-win_height = 960
+win_width = 480
+win_height = 480
 win = pygame.display.set_mode((win_width, win_height))
-pygame.display.set_caption('First Game')
+pygame.display.set_caption('First Game') 
 clock = pygame.time.Clock()
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
 
-bg = pygame.image.load('materials/bg_large.png')
+bg = pygame.image.load('materials/bg.jpg')
 
 
 def redrawGameWindow(win):
@@ -21,6 +20,9 @@ def redrawGameWindow(win):
         player.draw(win)
         for bullet in player.bullet_list:
             bullet.draw(win)
+        for explosion in player.explode_list:
+            explosion.draw(win,player) 
+    
     for enemy in enemy_list:
         enemy.draw(win)
     pygame.display.update()
@@ -48,7 +50,7 @@ def checkEnemyEnemyCollision():
         first_hb_3 = first.hitbox[3]
         for j in range(i-1, -1, -1):
             # if i == j:
-            #     continue
+            #     continue s
             second = enemy_list[j]
             second_hb_0 = second.hitbox[0]
             second_hb_1 = second.hitbox[1]
@@ -64,13 +66,15 @@ def checkEnemyEnemyCollision():
 def playerUpdate(player_list):
     for player in player_list:
         player.shootLoop += 1
+        player.switchLoop += 1 
         if player.shootLoop >= player.shootCoolDown:
             player.shootLoop = 0
-
+        if player.switchLoop >= player.switchGap:
+            player.switchLoop =0 
 # Initialize player
 # player = Player(300, 410, 591//9, 261//4)
 player_list = []
-for i in range(2):
+for i in range(2): 
     player_list.append(Player(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 591//9, 261//4))
 
 # Initialize enemy
@@ -84,7 +88,7 @@ for i in range(N):
 run = [True]
 player_selection = ["1P", "2P"]
 while run[0]:
-    clock.tick(90) # Set FPS
+    clock.tick(100) # Set FPS
 
     # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
     for event in pygame.event.get(): 
@@ -94,7 +98,6 @@ while run[0]:
             # This will create enemy every 0.2 sec
             enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
             enemy_list[-1].target = random.randrange(0, len(player_list), 1)
-
     checkEnemyEnemyCollision()
 
     # Moving the player with "WASD"
@@ -113,13 +116,18 @@ while run[0]:
                 enemy_hb_2 = enemy.hitbox[2]
                 enemy_hb_3 = enemy.hitbox[3]
                 if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
+                    x = enemy_hb_0
+                    y = enemy_hb_1
+                    exp = Explosion(x,y) 
+                    player.explode_list.append(exp)
                     player.bullet_list.pop(player.bullet_list.index(bullet))
                     enemy_list.pop(enemy_list.index(enemy))
                     break
-                
-    # print(len(player_list))
+
+    # print(len(player_list))a 
         # print(len(player.bullet_list))
-    playerUpdate(player_list)
-    redrawGameWindow(win)
+
+    playerUpdate(player_list) 
+    redrawGameWindow(win)  
 
 pygame.quit()

@@ -1,5 +1,9 @@
 import pygame
+import math
 import random
+import copy
+import threading 
+
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
 
@@ -57,10 +61,17 @@ class Player(Character):
         self.right = True
         self.set_hitbox(15, 5, self.width-35, self.height-10)
         self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', 4, 9)
-        self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH}}
+        self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
         self.bullet_list = []
         self.shootLoop = 0
-        self.shootCoolDown = 1
+        self.shootCoolDown = 10
+        self.switchLoop = 0
+        self.switchGap = 10
+        self.explode_list = []
+        self.weapon_list = ["pistol","shotgun","bomb"]
+        self.weapon = "bomb"
+ 
+ 
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -128,11 +139,20 @@ class Player(Character):
         if keys[player_control["shoot"]]:
             if self.shootLoop == 0:
                 self.shoot()
+
+        if keys[player_control["switch"]]:
+            if self.switchLoop == 0:
+                if self.weapon != self.weapon_list[-1]:
+                    self.weapon= self.weapon_list[self.weapon_list.index(self.weapon)+1]
+
+                else:
+                    self.weapon = self.weapon_list[0]
+                        
         if keys[pygame.K_q]:
             run[0] = False
 
         # print("right", self.right, "left", self.left, "up", self.up, "down", self.down)
-
+            
     def draw(self, win, frames=3):
         super().draw(win, frames)
         self.set_hitbox(15, 5, self.width - 35, self.height - 10)
@@ -149,6 +169,8 @@ class Player(Character):
         # pygame.display.update()
 
     def shoot(self):
+        x_bomb = self.x
+        y_bomb = self.y
         facing = [0, 0]
         if self.right:
             facing[0] = 1
@@ -158,9 +180,13 @@ class Player(Character):
             facing[1] = -1
         elif self.down:
             facing[1] = 1
+
+
         # if (self.right or self.left) and (self.up or self.down):
         #     facing = [x*(2**0.5) for x in facing]
-        self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing))
+        for i in range(Weapon_dict[self.weapon]['bullet_count']):
+            self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing, weapon=self.weapon, rotate=Weapon_dict[self.weapon]['bullet_rotate'][0]+i*Weapon_dict[self.weapon]['bullet_rotate'][1]))
+
 
 # 576*256
 class Enemy(Character):
@@ -169,15 +195,16 @@ class Enemy(Character):
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
-        self.vel = 10
+        self.vel = 1
         pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)
         dy = (player.y - self.y)# + random.randrange(-200, 200, 1)
         dl = (dx**2 + dy**2)**0.5
-        self.x += self.vel*dx/dl
-        self.y += self.vel*dy/dl
+        if dl !=0:
+            self.x += self.vel*dx/dl
+            self.y += self.vel*dy/dl
         
         if dx > 0:
             self.right = True
@@ -214,17 +241,37 @@ class Enemy(Character):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
-    def __init__(self, x, y, facing, radius=6, color=(0, 0, 0), vel=8):
+    def __init__(self, x, y, facing, color=(0, 0, 0), weapon = 'pistol', rotate = 0):
         self.x = x
         self.y = y
-        self.radius = radius
+        self.radius = Weapon_dict[weapon]['bullet_radius']
         self.color = color
         self.facing = facing
-        self.vel = 8
-    
+        self.vel = Weapon_dict[weapon]['vel']
+        self.damage = Weapon_dict[weapon]['damage']
+        self.rotate = rotate
+        self.weapon = weapon
     def fly(self):
-        self.x += self.vel * self.facing[0]
-        self.y += self.vel * self.facing[1]
+        if self.rotate == 0:
+            self.x += self.vel * self.facing[0]
+            self.y += self.vel * self.facing[1]
+
+        else:
+            facing_adjust = copy.deepcopy(self.facing)
+            rotate_adjust = self.rotate
+            if self.facing[0] == 0:
+                facing_adjust[0] = 1
+                rotate_adjust =  (90 - self.rotate)
+            elif self.facing[1] == 0:
+                facing_adjust[1] = 1 
+            elif self.facing == [1,1] or self.facing == [-1,-1]:
+                rotate_adjust = 45 + self.rotate
+            elif self.facing == [1,-1] or self.facing == [-1,1]:
+                rotate_adjust = 45 - self.rotate
+            self.x += self.vel *math.cos(math.radians(rotate_adjust))* facing_adjust[0]
+            self.y += self.vel *math.sin(math.radians(rotate_adjust))* facing_adjust[1]
+
+
 
     def draw(self, win):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
@@ -238,11 +285,36 @@ class Bullet():
     def hit(self):
         pass
 
-class Button():
-    def __init__(self, color, x, y, width, height, text=""):
-        self.color = color
+
+class Explosion():
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
-        self.text = text
+        self.exp = []
+        self.expcount = 0
+        self.extract_from_sprite_sheet('materials/explosion_sprite.png',4,8)
+
+    def extract_from_sprite_sheet(self, image_source, scale, steps):
+        sprite_sheet = pygame.image.load(image_source)
+        for i in range(scale):
+            for  j in range(steps):
+                #self.width = 512//8  self.height = 331//5
+                img = sprite_sheet.subsurface((512//8*j, 331//5*i, 512//8, 331//5))
+                img = pygame.transform.scale(img, (75, 75))
+                self.exp.append(img)   
+
+    def draw(self, win, player):
+        if self.x < 480 and self.y < 480: 
+            win.blit(self.exp[self.expcount], (self.x, self.y))
+            self.expcount += 1
+            if self.expcount >= 30:
+                self.expcount = 0
+                player.explode_list = []
+                return None
+
+
+Weapon_dict= {
+    "pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
+    "shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-20,20]},
+    "bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0]}
+    }

@@ -17,9 +17,9 @@ win.blit(start_bg, (0, 0))
 
 font4 = pygame.font.SysFont("simhei", 50) # 按鈕字體、大小
 
-button1_ps = (win_width/7*1,win_height/7*5.5) # 按鈕位置修改處
-button2_ps = (win_width/7*3,win_height/7*5.5)
-button3_ps = (win_width/7*5,win_height/7*5.5)
+button1_ps = (int(win_width/7*1), int(win_height/7*5.5)) # 按鈕位置修改處
+button2_ps = (int(win_width/7*3), int(win_height/7*5.5))
+button3_ps = (int(win_width/7*5), int(win_height/7*5.5))
 button4_ps = (0, 0)
 
 # 建立按鈕並檢查是否按下滑鼠
@@ -186,7 +186,7 @@ while to_run:
 
     player_selection = ["1P", "2P"]
     while run[0]:
-        clock.tick(60) # Set FPS
+        clock.tick(100) # Set FPS
            
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
         for event in pygame.event.get(): 

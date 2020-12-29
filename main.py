@@ -107,7 +107,7 @@ while to_run:
                 health_bg1.fill((255,0,0))
                 win.blit(health_bg1, (player.x+10, player.y))
 
-                health_bg2 = pygame.Surface((40*player.health/player.healthmax,5))  #血條大小
+                health_bg2 = pygame.Surface((int(40*player.health/player.healthmax),5))  #血條大小
                 health_bg2.convert()
                 health_bg2.fill((0,255,0))
                 win.blit(health_bg2, (player.x+10, player.y))
@@ -252,9 +252,9 @@ while to_run:
         win.blit(bg_over, (0, 0))
         font3 = pygame.font.SysFont("simhei", 40)
         text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
-        win.blit(text3, (win_width/2-100,win_height/2))   #
+        win.blit(text3, (int(win_width/2-100), int(win_height/2)))   #
         text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
-        win.blit(text4, (win_width/2-100,win_height/2+50))
+        win.blit(text4, (int(win_width/2-100), int(win_height/2+50)))
         
         str1 = "AGAIN"
         str2 = "SCORE"

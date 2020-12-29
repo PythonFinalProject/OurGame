@@ -74,7 +74,7 @@ def playerUpdate(player_list):
 # Initialize player
 # player = Player(300, 410, 591//9, 261//4)
 player_list = []
-for i in range(2): 
+for i in range(2):
     player_list.append(Player(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 591//9, 261//4))
 
 # Initialize enemy

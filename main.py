@@ -1,6 +1,5 @@
 import pygame
 import random
-from random import choice 
 from character import Player, Enemy, Explosion
 
 win_width = 480
@@ -162,7 +161,7 @@ while to_run:
                     break
             if collision == False:
                 if first.target not in target_player:
-                    first.target = choice(target_player)
+                    first.target = random.choice(target_player)
                 first.chase(player_list[first.target])
 
 

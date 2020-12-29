@@ -251,10 +251,7 @@ class Bullet():
         self.damage = Weapon_dict[weapon]['damage']
         self.rotate = rotate
         self.weapon = weapon
-<<<<<<< HEAD
-=======
     
->>>>>>> Weng
     def fly(self):
         if self.rotate == 0:
             self.x += self.vel * self.facing[0]

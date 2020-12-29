@@ -201,7 +201,7 @@ class Enemy(Character):
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.vel = 1
-        pygame.time.set_timer(CREATE_ENEMY_EVENT, 200) # Create enemy every 1 sec
+        pygame.time.set_timer(CREATE_ENEMY_EVENT, 2000) # Create enemy every 1 sec
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)

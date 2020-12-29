@@ -5,22 +5,23 @@ from character import Player, Enemy, Explosion
 win_width = 480
 win_height = 480
 pygame.init()
-win = pygame.display.set_mode((win_width,win_height))   # 遊戲視窗
-pygame.display.set_caption("First Game")    #  给視窗取名
-clock = pygame.time.Clock()                 #  遊戲更新速度
+
+win = pygame.display.set_mode((win_width,win_height)) # 遊戲視窗
+pygame.display.set_caption("First Game") # 给視窗取名
+clock = pygame.time.Clock() # 遊戲更新速度
 
 start_bg = pygame.image.load("./materials/startphoto(480).png")
 start_bg.convert()
 win.blit(start_bg, (0, 0))
 
-font4 = pygame.font.SysFont("simhei", 50)   #按鈕字體、大小
+font4 = pygame.font.SysFont("simhei", 50) # 按鈕字體、大小
 
-button1_ps = (win_width/7*1,win_height/7*5.5)   #按鈕位置修改處
+button1_ps = (win_width/7*1,win_height/7*5.5) # 按鈕位置修改處
 button2_ps = (win_width/7*3,win_height/7*5.5)
 button3_ps = (win_width/7*5,win_height/7*5.5)
 button4_ps = (0, 0)
 
-#建立按鈕並檢查是否按下滑鼠
+# 建立按鈕並檢查是否按下滑鼠
 to_run = True
 n1 = True
 while to_run: 
@@ -32,6 +33,7 @@ while to_run:
         str1 = "PLAY"
         str2 = "QUIT"
         str3 = "SET"
+
         button1_off = font4.render(str1, True, (170,0,0),(0,0,0)) 
         button1_on = font4.render(str1, True, (255,0,0),(0,0,0))
         button2_off = font4.render(str2, True, (170,0,0),(0,0,0))
@@ -39,6 +41,7 @@ while to_run:
         button3_off = font4.render(str3, True, (170,0,0),(0,0,0))
         button3_on = font4.render(str3, True, (255,0,0),(0,0,0))
         button_size = []
+
         button_size.append([button1_off.get_size()[0], button1_off.get_size()[1]])
         button_size.append([button2_off.get_size()[0], button2_off.get_size()[1]])
         button_size.append([button3_off.get_size()[0], button3_off.get_size()[1]])
@@ -55,7 +58,7 @@ while to_run:
         if x1 >= button2_ps[0] and x1 <= button2_ps[0]+button_size[1][0] and y1 >= button2_ps[1] and y1 <=button2_ps[1]+button_size[1][1]:
             win.blit(button2_on, button2_ps)         
             if buttons[0]:  #若按下 退出
-                print("rrr")
+                print("exiting...")
                 to_run = False
                 break
         if x1 >= button3_ps[0] and x1 <= button3_ps[0]+button_size[2][0] and y1 >= button3_ps[1] and y1 <=button3_ps[1]+button_size[2][1]:
@@ -65,7 +68,7 @@ while to_run:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("退出遊戲")
+                print("exiting")
                 pygame.quit()
     
     if to_run == False:
@@ -112,8 +115,10 @@ while to_run:
                 #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
             for bullet in player.bullet_list:
                 bullet.draw(win)
+            # print(player.explode_list)
             for explosion in player.explode_list:
                 explosion.draw(win,player)
+                player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
             enemy.draw(win)
         
@@ -122,7 +127,7 @@ while to_run:
         
         pygame.display.update()
 
-    def checkPlayEnemyCollision(player):
+    def checkPlayerEnemyCollision(player):
         global cold_time   # 受傷忍卻時間
         player_hb_0 = player.hitbox[0]
         player_hb_1 = player.hitbox[1]
@@ -134,8 +139,8 @@ while to_run:
             enemy_hb_2 = enemy.hitbox[2]
             enemy_hb_3 = enemy.hitbox[3]
             if player_hb_1 + player_hb_3 > enemy_hb_1 and player_hb_1 < enemy_hb_1 + enemy_hb_3 and player_hb_0 + player_hb_2 > enemy_hb_0 and player_hb_0 < enemy_hb_0 + enemy_hb_2:
-                if player.cold_time >130:#受傷忍卻時間
-                    player.cold_time = 0 #重新計時
+                if player.cold_time >130: # 受傷忍卻時間
+                    player.cold_time = 0 # 重新計時
                     player.hit()
                     
 
@@ -175,7 +180,7 @@ while to_run:
                 player.switchLoop =0 
 
     run = [True]
-    score = 0   #分數
+    score = 0 # 分數
 
     player_selection = ["1P", "2P"]
     while run[0]:
@@ -191,17 +196,17 @@ while to_run:
                 # This will create enemy every 0.2 sec
                 enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
                 enemy_list[-1].target = random.randrange(0, len(player_list), 1)
-        if len(target_player) == 0:  #如果沒有目標 退出遊戲
+        if len(target_player) == 0: # 如果沒有目標 退出遊戲
             run[0] = False
-            pygame.time.wait(1000)  #短暫暫停
+            pygame.time.wait(1000) # 短暫暫停
             break
         checkEnemyEnemyCollision()
         #print("new")
         # Moving the player with "WASD"
         for i, player in enumerate(player_list):
-            checkPlayEnemyCollision(player)
+            checkPlayerEnemyCollision(player)
             
-            if (player.health <= 0) and i in target_player:# 生命歸零時 移出目標清單
+            if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
                 target_player.remove(i)  
 
             player.control(run, win_width, win_height, player_selection[i])
@@ -223,9 +228,9 @@ while to_run:
                         player.explode_list.append(exp)
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         enemy_list.pop(enemy_list.index(enemy))
-                        score += 1   #打死敵人後分數加1)
+                        score += 1 # 打死敵人後分數加1
                         break
-            player.cold_time += 1     #計算受傷忍卻時間
+            player.cold_time += 1 # 計算受傷忍卻時間
 
         # print(len(player_list))
             # print(len(player.bullet_list))
@@ -233,8 +238,8 @@ while to_run:
         redrawGameWindow(win)
         
     """"""  #結束畫面
-    bj = pygame.image.load('./materials/overphoto.png')
-    bj.convert()
+    bg_over = pygame.image.load('./materials/overphoto.png')
+    bg_over.convert()
 
     n2 = True
     while n2:
@@ -242,7 +247,7 @@ while to_run:
         buttons = pygame.mouse.get_pressed()
         x1, y1 = pygame.mouse.get_pos()
         
-        win.blit(bj, (0, 0))
+        win.blit(bg_over, (0, 0))
         font3 = pygame.font.SysFont("simhei", 40)
         text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
         win.blit(text3, (win_width/2-100,win_height/2))   #
@@ -252,6 +257,7 @@ while to_run:
         str1 = "AGAIN"
         str2 = "SCORE"
         str3 = "QUIT"
+
         button1_off = font4.render(str1, True, (170,0,0),(0,0,0)) 
         button1_on = font4.render(str1, True, (255,0,0),(0,0,0))
         button2_off = font4.render(str2, True, (170,0,0),(0,0,0))
@@ -274,19 +280,19 @@ while to_run:
         win.blit(button4_off, button4_ps)
         if x1 >= button1_ps[0] and x1 <= button1_ps[0]+button_size[0][0] and y1 >= button1_ps[1] and y1 <=button1_ps[1]+button_size[0][1]:
             win.blit(button1_on, button1_ps)
-            if buttons[0]:  #若按下 進入                
+            if buttons[0]: # 若按下 進入                
                 break
         if x1 >= button2_ps[0] and x1 <= button2_ps[0]+button_size[1][0] and y1 >= button2_ps[1] and y1 <=button2_ps[1]+button_size[1][1]:
             win.blit(button2_on, button2_ps)
                        
         if x1 >= button3_ps[0] and x1 <= button3_ps[0]+button_size[2][0] and y1 >= button3_ps[1] and y1 <=button3_ps[1]+button_size[2][1]:
             win.blit(button3_on, button3_ps)
-            if buttons[0]:  #若按下 退出
+            if buttons[0]: # 若按下 退出
                 to_run = False
                 break
         if x1 >= button4_ps[0] and x1 <= button4_ps[0]+button_size[3][0] and y1 >= button4_ps[1] and y1 <=button4_ps[1]+button_size[3][1]:
             win.blit(button4_on, button4_ps)
-            if buttons[0]:  #若按下 退出
+            if buttons[0]: # 若按下 退出
                 n1 = True
                 break       
                 
@@ -294,7 +300,7 @@ while to_run:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("退出遊戲")
+                print("exiting")
                 n2 = False
                 to_run = False
                 pygame.quit()

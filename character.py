@@ -251,6 +251,10 @@ class Bullet():
         self.damage = Weapon_dict[weapon]['damage']
         self.rotate = rotate
         self.weapon = weapon
+<<<<<<< HEAD
+=======
+    
+>>>>>>> Weng
     def fly(self):
         if self.rotate == 0:
             self.x += self.vel * self.facing[0]
@@ -268,8 +272,8 @@ class Bullet():
                 rotate_adjust = 45 + self.rotate
             elif self.facing == [1,-1] or self.facing == [-1,1]:
                 rotate_adjust = 45 - self.rotate
-            self.x += self.vel *math.cos(math.radians(rotate_adjust))* facing_adjust[0]
-            self.y += self.vel *math.sin(math.radians(rotate_adjust))* facing_adjust[1]
+            self.x += int(self.vel * math.cos(math.radians(rotate_adjust))* facing_adjust[0])
+            self.y += int(self.vel * math.sin(math.radians(rotate_adjust))* facing_adjust[1])
 
 
 

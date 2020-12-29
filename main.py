@@ -1,7 +1,7 @@
 import pygame
 import random
-from random import choice
-from character import Player, Enemy
+from random import choice 
+from character import Player, Enemy, Explosion
 
 win_width = 480
 win_height = 480
@@ -113,6 +113,8 @@ while to_run:
                 #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
             for bullet in player.bullet_list:
                 bullet.draw(win)
+            for explosion in player.explode_list:
+                explosion.draw(win,player)
         for enemy in enemy_list:
             enemy.draw(win)
         
@@ -167,8 +169,11 @@ while to_run:
     def playerUpdate(player_list):
         for player in player_list:
             player.shootLoop += 1
+            player.switchLoop += 1 
             if player.shootLoop >= player.shootCoolDown:
                 player.shootLoop = 0
+            if player.switchLoop >= player.switchGap:
+                player.switchLoop =0 
 
     run = [True]
     score = 0   #分數
@@ -213,6 +218,10 @@ while to_run:
                     enemy_hb_2 = enemy.hitbox[2]
                     enemy_hb_3 = enemy.hitbox[3]
                     if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
+                        x = enemy_hb_0
+                        y = enemy_hb_1
+                        exp = Explosion(x,y) 
+                        player.explode_list.append(exp)
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         enemy_list.pop(enemy_list.index(enemy))
                         score += 1   #打死敵人後分數加1)
@@ -295,5 +304,3 @@ while to_run:
         break
         
 pygame.quit()
-
-

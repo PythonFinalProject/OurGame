@@ -186,7 +186,7 @@ while to_run:
 
     player_selection = ["1P", "2P"]
     while run[0]:
-        clock.tick(100) # Set FPS
+        clock.tick(60) # Set FPS
            
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
         for event in pygame.event.get(): 

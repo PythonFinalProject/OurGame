@@ -2,6 +2,7 @@ import pygame
 import random
 from random import choice 
 from character import Player, Enemy, Explosion
+import threading
 
 win_width = 480
 win_height = 480
@@ -180,12 +181,28 @@ while to_run:
                 player.shootLoop = 0
             if player.switchLoop >= player.switchGap:
                 player.switchLoop =0 
+    
+    def get_keys():
+        while run[0]:
+            clock.tick(100)
+            global keys
+            global score
+            for i, player in enumerate(player_list):
+                player.control(run, win_width, win_height, player_selection[i], keys)
+            # print(keys)
+            # print("in key loop", score)
 
     run = [True]
     score = 0 # 分數
 
     player_selection = ["1P", "2P"]
+    keys = []
+
+    thread_get_key = threading.Thread(target=get_keys)
+    # thread_get_key.start()
+
     while run[0]:
+        # print("in main loop", score)
         clock.tick(60) # Set FPS
            
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
@@ -206,12 +223,14 @@ while to_run:
         #print("new")
         # Moving the player with "WASD"
         for i, player in enumerate(player_list):
+            print(player.shootLoop)
             checkPlayerEnemyCollision(player)
             
             if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
                 target_player.remove(i)  
-
-            player.control(run, win_width, win_height, player_selection[i])
+            
+            keys = pygame.key.get_pressed()
+            player.control(run, win_width, win_height, player_selection[i], keys)
             for bullet in player.bullet_list:
                 bullet.fly()
                 if bullet.out(win_width, win_height):

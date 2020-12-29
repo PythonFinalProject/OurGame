@@ -75,8 +75,8 @@ class Player(Character):
  
  
 
-    def control(self, run, win_width, win_height, num_player):
-        keys = pygame.key.get_pressed()
+    def control(self, run, win_width, win_height, num_player, keys):
+        # keys = pygame.key.get_pressed()
         player_control = self.player_selection[num_player]
         
         if not keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]]:

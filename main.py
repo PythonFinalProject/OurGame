@@ -200,6 +200,7 @@ while to_run:
             run[0] = False
             pygame.time.wait(1000) # 短暫暫停
             break
+        
         checkEnemyEnemyCollision()
         #print("new")
         # Moving the player with "WASD"

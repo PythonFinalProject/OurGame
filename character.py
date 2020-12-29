@@ -67,16 +67,18 @@ class Player(Character):
         self.cold_time = 0    #12.26新增 受傷冷卻時間
         self.shootLoop = 0
         self.shootCoolDown = 10
+        self.shootAvailabe = True
         self.switchLoop = 0
-        self.switchGap = 10
+        self.switchCoolDown = 10
+        self.switchAvailabe = True
         self.explode_list = []
         self.weapon_list = ["pistol","shotgun","bomb"]
         self.weapon = "bomb"
  
  
 
-    def control(self, run, win_width, win_height, num_player, keys):
-        # keys = pygame.key.get_pressed()
+    def control(self, run, win_width, win_height, num_player):
+        keys = pygame.key.get_pressed()
         player_control = self.player_selection[num_player]
         
         if not keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]]:
@@ -141,9 +143,11 @@ class Player(Character):
         if keys[player_control["shoot"]]:
             if self.shootLoop == 0:
                 self.shoot()
+                self.shootAvailabe = False
 
         if keys[player_control["switch"]]:
             if self.switchLoop == 0:
+                self.switchAvailabe = False
                 if self.weapon != self.weapon_list[-1]:
                     self.weapon= self.weapon_list[self.weapon_list.index(self.weapon)+1]
 

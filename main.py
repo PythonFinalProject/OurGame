@@ -175,32 +175,21 @@ while to_run:
 
     def playerUpdate(player_list):
         for player in player_list:
-            player.shootLoop += 1
-            player.switchLoop += 1 
+            if player.shootAvailabe == False:
+                player.shootLoop += 1
+            if player.switchAvailabe == False:
+                player.switchLoop += 1 
             if player.shootLoop >= player.shootCoolDown:
                 player.shootLoop = 0
-            if player.switchLoop >= player.switchGap:
+                player.shootAvailabe = True
+            if player.switchLoop >= player.switchCoolDown:
                 player.switchLoop =0 
+                player.switchAvailabe = True
     
-    def get_keys():
-        while run[0]:
-            clock.tick(100)
-            global keys
-            global score
-            for i, player in enumerate(player_list):
-                player.control(run, win_width, win_height, player_selection[i], keys)
-            # print(keys)
-            # print("in key loop", score)
-
     run = [True]
     score = 0 # 分數
 
     player_selection = ["1P", "2P"]
-    keys = []
-
-    thread_get_key = threading.Thread(target=get_keys)
-    # thread_get_key.start()
-
     while run[0]:
         # print("in main loop", score)
         clock.tick(60) # Set FPS
@@ -228,9 +217,8 @@ while to_run:
             
             if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
                 target_player.remove(i)  
-            
-            keys = pygame.key.get_pressed()
-            player.control(run, win_width, win_height, player_selection[i], keys)
+
+            player.control(run, win_width, win_height, player_selection[i])
             for bullet in player.bullet_list:
                 bullet.fly()
                 if bullet.out(win_width, win_height):

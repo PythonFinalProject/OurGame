@@ -84,11 +84,12 @@ class Player(Character):
         self.switchCoolDown = 10
         self.switchAvailabe = True
         self.explode_list = []
-        self.weapon_list = ["pistol","shotgun","bomb"]
-        self.weapon = "bomb"
+        self.weapon_list = ["1.pistol"]
+        self.weapon = "1.pistol"
         self.is_super_man = False
         self.is_enlarged = False
         self.is_medium = True
+        self.weapon_dict = WEAPON_DICT
  
  
 
@@ -232,8 +233,8 @@ class Player(Character):
 
             # if (self.right or self.left) and (self.up or self.down):
             #     facing = [x*(2**0.5) for x in facing]
-            for i in range(Weapon_dict[self.weapon]['bullet_count']):
-                self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing, weapon=self.weapon, rotate=Weapon_dict[self.weapon]['bullet_rotate'][0]+i*Weapon_dict[self.weapon]['bullet_rotate'][1]))
+            for i in range(self.weapon_dict[self.weapon]['bullet_count']):
+                self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing, radius=self.weapon_dict[self.weapon]['bullet_radius'], velocity=self.weapon_dict[self.weapon]['vel'], damage=self.weapon_dict[self.weapon]['damage'], weapon=self.weapon, rotate=self.weapon_dict[self.weapon]['bullet_rotate'][0]+i*self.weapon_dict[self.weapon]['bullet_rotate'][1]))
 
 
 # 576*256
@@ -289,14 +290,14 @@ class Enemy(Character):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
-    def __init__(self, x, y, facing, color=(0, 0, 0), weapon = 'pistol', rotate = 0):
+    def __init__(self, x, y, facing, radius, velocity, damage, color=(0, 0, 0), weapon = '1.pistol', rotate = 0):
         self.x = x
         self.y = y
-        self.radius = Weapon_dict[weapon]['bullet_radius']
+        self.radius = radius
         self.color = color
         self.facing = facing
-        self.vel = Weapon_dict[weapon]['vel']
-        self.damage = Weapon_dict[weapon]['damage']
+        self.vel = velocity
+        self.damage = damage
         self.rotate = rotate
         self.weapon = weapon
     
@@ -307,6 +308,8 @@ class Bullet():
 
         else:
             facing_adjust = copy.deepcopy(self.facing)
+            if self.weapon == '4.missle':
+                self.rotate += random.randrange(-50, 50, 1)
             rotate_adjust = self.rotate
             if self.facing[0] == 0:
                 facing_adjust[0] = 1
@@ -372,7 +375,7 @@ class Coconut():
         self.offset = 8
         self.ignited = False
         self.read_image()
-        self.surprise_list = ["revert walking", "super man"]
+        self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
@@ -400,6 +403,20 @@ class Coconut():
             self.tracked_player.is_medium = False
             # for i in range(len(self.tracked_player.walk_left)):
             #     pygame.transform.scale(self.tracked_player.walk_left[i], (20, 20))
+        elif self.surprise == "add shotgun":
+            if "2.shotgun" not in self.tracked_player.weapon_list:
+                self.tracked_player.weapon_list.append("2.shotgun")
+                self.tracked_player.weapon_list.sort()
+        
+        elif self.surprise == "add bomb":
+            if "3.bomb" not in self.tracked_player.weapon_list:
+                self.tracked_player.weapon_list.append("3.bomb")
+                self.tracked_player.weapon_list.sort()
+        
+        elif self.surprise == "add missle":
+            if "4.missle" not in self.tracked_player.weapon_list:
+                self.tracked_player.weapon_list.append("4.missle")
+                self.tracked_player.weapon_list.sort()
     
     def remove_surprise(self):
         if self.surprise == 'revert walking':
@@ -416,8 +433,9 @@ class Coconut():
         # draw hitbox
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
-Weapon_dict= {
-    "pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
-    "shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-20,20]},
-    "bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0]}
+WEAPON_DICT = {
+    "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
+    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15]},
+    "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
+    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6]}
     }

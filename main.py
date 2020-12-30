@@ -70,7 +70,7 @@ while to_run:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("exiting")
+                print("exiting...")
                 pygame.quit()
     
     if to_run == False:
@@ -195,7 +195,6 @@ while to_run:
                     first.target = choice(target_player)
                 first.chase(player_list[first.target])
 
-
     def playerUpdate(player_list):
         for player in player_list:
             if player.shootAvailabe == False:
@@ -222,9 +221,6 @@ while to_run:
                     coconut.remove_surprise()
                     coconut_list.pop(coconut_list.index(coconut))
 
-
-
-    
     run = [True]
     score = 0 # 分數
 
@@ -254,7 +250,7 @@ while to_run:
         #print("new")
         # Moving the player with "WASD"
         for i, player in enumerate(player_list):
-            # print(player.shootLoop)
+            # print(player.weapon)
             checkPlayerEnemyCollision(player)
             checkPlayerCoconutCollision(player)
             
@@ -353,7 +349,7 @@ while to_run:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("exiting")
+                print("exiting...")
                 n2 = False
                 to_run = False
                 pygame.quit()

@@ -3,6 +3,7 @@ import random
 from random import choice 
 from character import Player, Enemy, Explosion, Coconut, Button
 import threading
+from datetime import *
 
 win_width = 480
 win_height = 480
@@ -284,12 +285,10 @@ while to_run:
     def coconutUpdate(coconut_list):
         for coconut in coconut_list:
             if coconut.ignited == True:
-                print(coconut.surprise)
+                #print(coconut.surprise)
                 coconut.update_surprise()
-                print(coconut.surprise_count , coconut.SURPRISE_TIME_TICK)
+                #print(coconut.surprise_count , coconut.SURPRISE_TIME_TICK)
                 if coconut.surprise_count > coconut.SURPRISE_TIME_TICK:
-                    
-                    
                     coconut.remove_surprise()
                     coconut_list.pop(coconut_list.index(coconut))
                     
@@ -373,52 +372,107 @@ while to_run:
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
             redrawGameWindow(win)
-        
+    """"""  #處理分數
+    txt = []
+    with open("C:\\Users\\user1\\Desktop\\OurGame\\score.txt", "r") as f: 
+        for i in range(10):
+            a = f.read(23)[:-1].split(",")
+            if a[0] != "":
+                txt.append(a)
+    if score<10:
+        score_str = "0"+str(score)
+    else:
+        score_str = str(score)
+    day = str(datetime.today())[:19]
+    txt.append([score_str,day])
+    d = {}
+    #print(txt)
+    for j in range(len(txt)):
+        d[txt[j][0]] = txt[j][1]
+    #print(d)
+    s = []
+    for key in d:
+        s.append(key)
+    s.sort()
+    s = s[::-1]
+    new_txt = []
+    for k in s[:10]:
+        new_txt.append([k,d[k]])
+    with open("C:\\Users\\user1\\Desktop\\OurGame\\score.txt", "w") as f:
+        for l in range(len(new_txt)):
+            f.write(new_txt[l][0]+","+new_txt[l][1]+"\n")
     """"""  #結束畫面
     bg_over = pygame.image.load('./materials/overphoto.png')
     bg_over.convert()
 
-
-    while n2:
+    n2_score = False
+    while n2:        
         clock.tick(30)
         buttons = pygame.mouse.get_pressed()
         x1, y1 = pygame.mouse.get_pos()
-        
-        win.blit(bg_over, (0, 0))
-        font3 = pygame.font.SysFont("simhei", 40)
-        text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
-        win.blit(text3, (int(win_width/2-100), int(win_height/2)))   #
-        text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
-        win.blit(text4, (int(win_width/2-100), int(win_height/2+50)))
-        
-        button1 = Button(int(win_width/7*1), int(win_height/7*5.5), "AGAIN")
-        button2 = Button(int(win_width/7*3), int(win_height/7*5.5), "SCORE")
-        button3 = Button(int(win_width/7*5), int(win_height/7*5.5), "QUIT")
-        button4 = Button(0, 0, "BACK")
-        win.blit(button1.off, button1.ps)
-        win.blit(button2.off, button2.ps)
-        win.blit(button3.off, button3.ps)
-        win.blit(button4.off, button4.ps)
-        
-        if button1.range(x1,y1):
-            win.blit(button1.on, button1.ps)
-            if buttons[0]: # 若按下 進入                
-                break
-        if button2.range(x1,y1):
-            win.blit(button2.on, button2.ps)
-                       
-        if button3.range(x1,y1):
-            win.blit(button3.on, button3.ps)
-            if buttons[0]: # 若按下 退出
-                to_run = False
-                break
-        if button4.range(x1,y1):
-            win.blit(button4.on, button4.ps)
-            if buttons[0]: # 若按下 退出
-                n1 = True
-                break                       
-        pygame.display.update()
+        if n2_score == False:    
+            win.blit(bg_over, (0, 0))
+            font3 = pygame.font.SysFont("simhei", 40)
+            text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
+            win.blit(text3, (int(win_width/2-100), int(win_height/2)))   #
+            text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
+            win.blit(text4, (int(win_width/2-100), int(win_height/2+50)))
+            
+            button1 = Button(int(win_width/7*1), int(win_height/7*5.5), "AGAIN")
+            button2 = Button(int(win_width/7*3), int(win_height/7*5.5), "SCORE")
+            button3 = Button(int(win_width/7*5), int(win_height/7*5.5), "QUIT")
+            button4 = Button(0, 0, "BACK")
+            win.blit(button1.off, button1.ps)
+            win.blit(button2.off, button2.ps)
+            win.blit(button3.off, button3.ps)
+            win.blit(button4.off, button4.ps)
+            
+            if button1.range(x1,y1):
+                win.blit(button1.on, button1.ps)
+                if buttons[0]: # 若按下 進入                
+                    break
+            if button2.range(x1,y1):
+                win.blit(button2.on, button2.ps)
+                if buttons[0]:                
+                    print("score")
+                    n2_score = True
+                    continue           
+            if button3.range(x1,y1):
+                win.blit(button3.on, button3.ps)
+                if buttons[0]: # 若按下 退出
+                    to_run = False
+                    break
+            if button4.range(x1,y1):
+                win.blit(button4.on, button4.ps)
+                if buttons[0]: # 若按下 退出
+                    n1 = True
+                    break                       
+            pygame.display.update()
 
+        else:   #set model    
+            win.blit(start_bg,(0,0))
+
+            
+
+            
+            font3 = pygame.font.SysFont("simhei", 20)
+            for i in range(len(new_txt)):
+                if i+1 < 10:
+                    num = "0"+str(i+1)
+                else:
+                    num = str(i+1)
+                text3 = font3.render(num+": "+new_txt[i][0]+"   "+new_txt[i][1], True, (0,0,0),(255,255,255))  #GameOver文字
+                win.blit(text3, (int(win_width/2-125), int(win_height/2-50+i*20)))   #
+            
+            button1 = Button(int(win_width/7*3), int(win_height/7*5+90), "BACK")       
+            win.blit(button1.off, button1.ps)    
+            if button1.range(x1,y1):
+                win.blit(button1.on, button1.ps)
+                if buttons[0]:  #若按下 進入
+                    print("BACK")
+                    n2_score = False
+  
+        pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 print("exiting")
@@ -426,8 +480,9 @@ while to_run:
                 n1 = False
                 n1_set = False
                 run = [False]
-                n2 = False 
+                n2 = False   
                 pygame.quit()
+                
          
     if to_run == False:
         break

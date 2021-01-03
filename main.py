@@ -106,6 +106,7 @@ while to_run:
         break
 
     """""" #遊戲畫面
+    score = 0
     font2 = pygame.font.SysFont("simhei", 20)   #score 
 
     CREATE_ENEMY_EVENT = pygame.USEREVENT
@@ -152,14 +153,22 @@ while to_run:
                 #pygame.draw.rect(health_bg, (0,255,0), [0,0,100,100], 20)   #打不出來...
                 #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
                 
+                if len(player.status) == 1:
+                    player_status = player.status[0]
+                else:
+                    player_status = player.status[0]
+                    for i in range(1,len(player.status)):
+                        player_status += "+%s" %player.status[i]
+               
+                
                 if player.name == "1P":    #畫出角色編號(1P or 2P)
                     img = pygame.image.load('./materials/1P.png')
-                    text3 = font2.render(f"{player.name}:{player.weapon}/{player.status}", True, (255,255,255), (0,0,0))  #畫出武器
+                    text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
                     ps = (90,0)   
                         
                 elif player.name == "2P":                   
                     img = pygame.image.load('./materials/2P.png')
-                    text3 = font2.render(f"{player.name}:{player.weapon}/{player.status}", True, (255,255,255), (0,0,0))  #畫出武器
+                    text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
                     ps = (90,20)                   
                 win.blit(img,(player.x+20, player.y+60))
                 win.blit(text3, ps)
@@ -194,7 +203,7 @@ while to_run:
         pygame.display.update()
 
     def checkPlayerEnemyCollision(player):
-        global cold_time   # 受傷忍卻時間
+        global cold_time, score   # 受傷忍卻時間和分數
         player_hb_0 = player.hitbox[0]
         player_hb_1 = player.hitbox[1]
         player_hb_2 = player.hitbox[2]
@@ -211,6 +220,8 @@ while to_run:
                         player.hit()
                 elif player.is_super_man == True:
                     enemy_list.pop(enemy_list.index(enemy))
+                    score += 1 # 撞死敵人後分數加1
+                    
     
     def checkPlayerCoconutCollision(player):
         player_hb_0 = player.hitbox[0]
@@ -281,12 +292,7 @@ while to_run:
                     
                     coconut.remove_surprise()
                     coconut_list.pop(coconut_list.index(coconut))
-
-
-
-    
-
-    score = 0 # 分數
+                    
     p_time = 0  #暫停按下次數
     p_cool = 0  #暫停冷卻時間
     pause = False
@@ -329,44 +335,44 @@ while to_run:
                 pygame.time.wait(1000) # 短暫暫停
                 break
             checkEnemyEnemyCollision()
-        #print("new")
-        # Moving the player with "WASD"
-        for i, player in enumerate(player_list):
-            # print(player.shootLoop)
-            checkPlayerEnemyCollision(player)
-            checkPlayerCoconutCollision(player)
-            
-            if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
-                target_player.remove(i)  
+            #print("new")
+            # Moving the player with "WASD"
+            for i, player in enumerate(player_list):
+                # print(player.shootLoop)
+                checkPlayerEnemyCollision(player)
+                checkPlayerCoconutCollision(player)
+                
+                if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
+                    target_player.remove(i)  
 
-            player.control(run, win_width, win_height, player_selection[i])
-            for bullet in player.bullet_list:
-                bullet.fly()
-                if bullet.out(win_width, win_height):
-                    player.bullet_list.pop(player.bullet_list.index(bullet))
-                    continue
-
-                for enemy in enemy_list:
-                    enemy_hb_0 = enemy.hitbox[0]
-                    enemy_hb_1 = enemy.hitbox[1]
-                    enemy_hb_2 = enemy.hitbox[2]
-                    enemy_hb_3 = enemy.hitbox[3]
-                    if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
-                        x = enemy_hb_0
-                        y = enemy_hb_1
-                        exp = Explosion(x,y) 
-                        player.explode_list.append(exp)
+                player.control(run, win_width, win_height, player_selection[i])
+                for bullet in player.bullet_list:
+                    bullet.fly()
+                    if bullet.out(win_width, win_height):
                         player.bullet_list.pop(player.bullet_list.index(bullet))
-                        enemy_list.pop(enemy_list.index(enemy))
-                        score += 1 # 打死敵人後分數加1
-                        break
-            player.cold_time += 1 # 計算受傷忍卻時間
+                        continue
 
-        # print(len(player_list))
-            # print(len(player.bullet_list))
-        playerUpdate(player_list)
-        coconutUpdate(coconut_list)
-        redrawGameWindow(win)
+                    for enemy in enemy_list:
+                        enemy_hb_0 = enemy.hitbox[0]
+                        enemy_hb_1 = enemy.hitbox[1]
+                        enemy_hb_2 = enemy.hitbox[2]
+                        enemy_hb_3 = enemy.hitbox[3]
+                        if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
+                            x = enemy_hb_0
+                            y = enemy_hb_1
+                            exp = Explosion(x,y) 
+                            player.explode_list.append(exp)
+                            player.bullet_list.pop(player.bullet_list.index(bullet))
+                            enemy_list.pop(enemy_list.index(enemy))
+                            score += 1 # 打死敵人後分數加1
+                            break
+                player.cold_time += 1 # 計算受傷忍卻時間
+
+            # print(len(player_list))
+                # print(len(player.bullet_list))
+            playerUpdate(player_list)
+            coconutUpdate(coconut_list)
+            redrawGameWindow(win)
         
     """"""  #結束畫面
     bg_over = pygame.image.load('./materials/overphoto.png')

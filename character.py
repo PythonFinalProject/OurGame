@@ -90,7 +90,7 @@ class Player(Character):
         self.is_enlarged = False
         self.is_medium = True
         self.name = name
-        self.status = "normal"   # the status low
+        self.status = ["normal"]   # the status low
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -393,27 +393,39 @@ class Coconut():
         self.surprise_count += 1
         if self.surprise == "revert walking":
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_d, "right": pygame.K_a, "up": pygame.K_s, "down": pygame.K_w, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_l, "right": pygame.K_j, "up": pygame.K_k, "down": pygame.K_i, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
-            self.tracked_player.status = "revertwalking"
+            if "revert walking" not in self.tracked_player.status:
+                self.tracked_player.status.append("revert walking")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
+            
         elif self.surprise == "super man":
             self.tracked_player.is_super_man = True
             self.tracked_player.enlarge()
             self.tracked_player.is_enlarged = True
             self.tracked_player.is_medium = False
-            self.tracked_player.status = "superman"
+            if "super man" not in self.tracked_player.status:  
+                self.tracked_player.status.append("super man")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
             # for i in range(len(self.tracked_player.walk_left)):
             #     pygame.transform.scale(self.tracked_player.walk_left[i], (20, 20))
     
     def remove_surprise(self):
         if self.surprise == 'revert walking':
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
-            self.tracked_player.status = "normal"   # the status low
+            self.tracked_player.status.remove("revert walking")   # the status low
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
+            
         elif self.surprise == 'super man':
             self.tracked_player.is_super_man = False
             self.tracked_player.medium()
             self.tracked_player.is_enlarged = False
             self.tracked_player.is_medium = True
-            self.tracked_player.status = "normal"
-            
+            self.tracked_player.status.remove("super man")
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
+                
     def draw(self, win):
         if not self.ignited:
             win.blit(self.img, (self.x, self.y))

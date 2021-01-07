@@ -271,7 +271,6 @@ while to_run:
                     first.target = choice(target_player)
                 first.chase(player_list[first.target])
 
-
     def playerUpdate(player_list):
         for player in player_list:
             if player.shootAvailabe == False:

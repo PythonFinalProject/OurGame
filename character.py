@@ -2,7 +2,6 @@ import pygame
 import math
 import random
 import copy
-import threading 
 
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
@@ -326,7 +325,7 @@ class Bullet():
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
     
     def out(self, win_width, win_height):
-        if self.x < 0 or self.x > win_width or self.y < 0 or self.y > win_height:
+        if self.x < 0 or self.x > 64*14 or self.y < 0 or self.y > 64*14:
             return True
         else:
             return False
@@ -372,7 +371,7 @@ class Coconut():
         self.offset = 8
         self.ignited = False
         self.read_image()
-        self.surprise_list = ["revert walking", "super man"]
+        self.surprise_list = ["revert walking", "super man", "healing"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
@@ -409,6 +408,17 @@ class Coconut():
                 self.tracked_player.status.remove("normal")
             # for i in range(len(self.tracked_player.walk_left)):
             #     pygame.transform.scale(self.tracked_player.walk_left[i], (20, 20))
+        elif self.surprise == "healing":
+            if "healing" not in self.tracked_player.status:
+                self.tracked_player.status.append("healing")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
+            if self.tracked_player.health >= 3:
+                self.tracked_player.health = 5
+            else:
+                self.tracked_player.health += 2
+            
+
     
     def remove_surprise(self):
         if self.surprise == 'revert walking':
@@ -425,6 +435,12 @@ class Coconut():
             self.tracked_player.status.remove("super man")
             if len(self.tracked_player.status) == 0:
                 self.tracked_player.status.append("normal")
+
+        elif self.surprise == "healing":
+            self.tracked_player.status.remove("healing")
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
+
                 
     def draw(self, win):
         if not self.ignited:
@@ -435,7 +451,7 @@ class Button():
     def __init__(self, x, y, str):
         self.ps = (int(x), int(y))
         self.str = str
-        font4 = pygame.font.SysFont("simhei", 50) # 按鈕字體、大小
+        font4 = pygame.font.SysFont("comicsansms", 40) # 按鈕字體、大小
         self.off = font4.render(str, True, (170,0,0),(0,0,0)) 
         self.on = font4.render(str, True, (255,0,0),(0,0,0))  
         self.size = ([self.off.get_size()[0], self.off.get_size()[1]])

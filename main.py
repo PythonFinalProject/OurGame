@@ -2,8 +2,8 @@ import pygame
 import random
 from random import choice 
 from character import Player, Enemy, Explosion, Coconut, Button
-import threading
 from datetime import *
+from tilemap import *
 
 win_width = 480
 win_height = 480
@@ -32,7 +32,7 @@ while to_run:
         win.blit(start_bg,(0,0))
         
         button1 = Button(int(win_width/7*1), int(win_height/7*5.5), "PLAY")  # 按鈕位置、文字修改處
-        button2 = Button(int(win_width/7*3), int(win_height/7*5.5), "QUIT")
+        button2 = Button(int(win_width/7*2.8), int(win_height/7*5.5), "QUIT")# 2.8 --> 比較對齊
         button3 = Button(int(win_width/7*5), int(win_height/7*5.5), "SET")
         win.blit(button1.off, button1.ps)
         win.blit(button2.off, button2.ps)
@@ -72,7 +72,7 @@ while to_run:
         x1, y1 = pygame.mouse.get_pos()
         win.blit(start_bg,(0,0))
                 
-        button1 = Button(int(win_width/7*1.5), int(win_height/7*2), "SINGLE PLAY")
+        button1 = Button(int(win_width/7*1.65), int(win_height/7*2), "SINGLE PLAY") #1.65 --> 比較置中
         button2 = Button(int(win_width/7*1.5), int(win_height/7*4), "COOPERATIVE")
         win.blit(button1.off, button1.ps)
         win.blit(button2.off, button2.ps)    
@@ -107,8 +107,9 @@ while to_run:
         break
 
     """""" #遊戲畫面
+
     score = 0
-    font2 = pygame.font.SysFont("simhei", 20)   #score 
+    font2 = pygame.font.SysFont("comicsansms", 15)   #score 
 
     CREATE_ENEMY_EVENT = pygame.USEREVENT
     CREATE_COCONUT_EVENT = pygame.USEREVENT + 1
@@ -130,11 +131,17 @@ while to_run:
 
     coconut_list = []
     coconut_list.append(Coconut(222, 222))
-    bg = pygame.image.load('./materials/bg.jpg')
-    bg.convert()
-
+    #bg = pygame.image.load('./materials/bg.jpg')
+    #bg.convert()
+    Map = TiledMap('./materials/Level 1.tmx')
+    Map_img = Map.make_map()
+    camera = Camera(64*14, 64*14)
+    Map_rect = Map_img.get_rect()
     def redrawGameWindow(win):
-        win.blit(bg, (0, 0))
+        #win.blit(bg, (0, 0))
+        print(Map_img.get_rect())
+        win.blit(Map_img, camera.apply_rect(Map_rect))
+        #print(Map_img.get_rect())
         status = pygame.Surface((win_width, 45))  #the status row on top
         status.convert()
         status.fill((0,0,0))
@@ -204,7 +211,7 @@ while to_run:
         pygame.display.update()
 
     def checkPlayerEnemyCollision(player):
-        global cold_time, score   # 受傷忍卻時間和分數
+        global cold_time, score   # 受傷冷卻時間和分數
         player_hb_0 = player.hitbox[0]
         player_hb_1 = player.hitbox[1]
         player_hb_2 = player.hitbox[2]
@@ -216,7 +223,7 @@ while to_run:
             enemy_hb_3 = enemy.hitbox[3]
             if player_hb_1 + player_hb_3 > enemy_hb_1 and player_hb_1 < enemy_hb_1 + enemy_hb_3 and player_hb_0 + player_hb_2 > enemy_hb_0 and player_hb_0 < enemy_hb_0 + enemy_hb_2:
                 if player.is_super_man == False:
-                    if player.cold_time > 130: # 受傷忍卻時間
+                    if player.cold_time > 130: # 受傷冷卻時間
                         player.cold_time = 0 # 重新計時
                         player.hit()
                 elif player.is_super_man == True:
@@ -281,7 +288,6 @@ while to_run:
             #     player.enlarge()
             # elif not player.is_enlarged:
             #     player.medium()
-
     def coconutUpdate(coconut_list):
         for coconut in coconut_list:
             if coconut.ignited == True:
@@ -291,7 +297,7 @@ while to_run:
                 if coconut.surprise_count > coconut.SURPRISE_TIME_TICK:
                     coconut.remove_surprise()
                     coconut_list.pop(coconut_list.index(coconut))
-                    
+
     p_time = 0  #暫停按下次數
     p_cool = 0  #暫停冷卻時間
     pause = False
@@ -365,16 +371,17 @@ while to_run:
                             enemy_list.pop(enemy_list.index(enemy))
                             score += 1 # 打死敵人後分數加1
                             break
-                player.cold_time += 1 # 計算受傷忍卻時間
+                player.cold_time += 1 # 計算受傷冷卻時間
 
             # print(len(player_list))
                 # print(len(player.bullet_list))
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
+            camera.update(player_list)
             redrawGameWindow(win)
     """"""  #處理分數
     txt = []
-    with open("C:\\Users\\user1\\Desktop\\OurGame\\score.txt", "r") as f: 
+    with open("./score.txt", "r") as f: 
         for i in range(10):
             a = f.read(23)[:-1].split(",")
             if a[0] != "":
@@ -398,7 +405,7 @@ while to_run:
     new_txt = []
     for k in s[:10]:
         new_txt.append([k,d[k]])
-    with open("C:\\Users\\user1\\Desktop\\OurGame\\score.txt", "w") as f:
+    with open("./score.txt", "w") as f:
         for l in range(len(new_txt)):
             f.write(new_txt[l][0]+","+new_txt[l][1]+"\n")
     """"""  #結束畫面
@@ -412,14 +419,14 @@ while to_run:
         x1, y1 = pygame.mouse.get_pos()
         if n2_score == False:    
             win.blit(bg_over, (0, 0))
-            font3 = pygame.font.SysFont("simhei", 40)
+            font3 = pygame.font.SysFont("comicsansms", 25)
             text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
-            win.blit(text3, (int(win_width/2-100), int(win_height/2)))   #
+            win.blit(text3, (int(win_width/2-60), int(win_height/2)))   #
             text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
-            win.blit(text4, (int(win_width/2-100), int(win_height/2+50)))
+            win.blit(text4, (int(win_width/2-50), int(win_height/2+50)))
             
-            button1 = Button(int(win_width/7*1), int(win_height/7*5.5), "AGAIN")
-            button2 = Button(int(win_width/7*3), int(win_height/7*5.5), "SCORE")
+            button1 = Button(int(win_width/7*0.5), int(win_height/7*5.5), "AGAIN")
+            button2 = Button(int(win_width/7*2.8), int(win_height/7*5.5), "SCORE")
             button3 = Button(int(win_width/7*5), int(win_height/7*5.5), "QUIT")
             button4 = Button(0, 0, "BACK")
             win.blit(button1.off, button1.ps)
@@ -451,11 +458,8 @@ while to_run:
 
         else:   #set model    
             win.blit(start_bg,(0,0))
-
             
-
-            
-            font3 = pygame.font.SysFont("simhei", 20)
+            font3 = pygame.font.SysFont("comicsansms", 12)
             for i in range(len(new_txt)):
                 if i+1 < 10:
                     num = "0"+str(i+1)

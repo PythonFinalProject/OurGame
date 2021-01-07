@@ -375,7 +375,7 @@ class Coconut():
         self.offset = 8
         self.ignited = False
         self.read_image()
-        self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle"]
+        self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle", "heal"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
@@ -417,6 +417,10 @@ class Coconut():
             if "4.missle" not in self.tracked_player.weapon_list:
                 self.tracked_player.weapon_list.append("4.missle")
                 self.tracked_player.weapon_list.sort()
+        
+        elif self.surprise == "heal":
+            if self.tracked_player.health != 5:
+                self.tracked_player.health += 1
     
     def remove_surprise(self):
         if self.surprise == 'revert walking':

@@ -2,7 +2,6 @@ import pygame
 import math
 import random
 import copy
-import threading 
 
 
 CREATE_ENEMY_EVENT = pygame.USEREVENT
@@ -67,7 +66,7 @@ class Character():
             win.blit(self.walk_pause, (self.x, self.y))
 
 class Player(Character):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, name):
         super().__init__(x, y, width, height)
         self.right = True
         self.set_hitbox(15, 5, self.width-35, self.height-10)
@@ -76,7 +75,7 @@ class Player(Character):
         self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
         self.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
         self.bullet_list = []
-        self.cold_time = 0    #12.26新增 受傷冷卻時間
+        self.cold_time = 0    
         self.shootLoop = 0
         self.shootCoolDown = 10
         self.shootAvailabe = True
@@ -89,8 +88,8 @@ class Player(Character):
         self.is_super_man = False
         self.is_enlarged = False
         self.is_medium = True
- 
- 
+        self.name = name
+        self.status = ["normal"]   # the status low
 
     def control(self, run, win_width, win_height, num_player):
         keys = pygame.key.get_pressed()
@@ -326,7 +325,7 @@ class Bullet():
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
     
     def out(self, win_width, win_height):
-        if self.x < 0 or self.x > win_width or self.y < 0 or self.y > win_height:
+        if self.x < 0 or self.x > 64*14 or self.y < 0 or self.y > 64*14:
             return True
         else:
             return False
@@ -372,7 +371,7 @@ class Coconut():
         self.offset = 8
         self.ignited = False
         self.read_image()
-        self.surprise_list = ["revert walking", "super man"]
+        self.surprise_list = ["revert walking", "super man", "healing"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
@@ -393,29 +392,73 @@ class Coconut():
         self.surprise_count += 1
         if self.surprise == "revert walking":
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_d, "right": pygame.K_a, "up": pygame.K_s, "down": pygame.K_w, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_l, "right": pygame.K_j, "up": pygame.K_k, "down": pygame.K_i, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
+            if "revert walking" not in self.tracked_player.status:
+                self.tracked_player.status.append("revert walking")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
+            
         elif self.surprise == "super man":
             self.tracked_player.is_super_man = True
             self.tracked_player.enlarge()
             self.tracked_player.is_enlarged = True
             self.tracked_player.is_medium = False
+            if "super man" not in self.tracked_player.status:  
+                self.tracked_player.status.append("super man")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
             # for i in range(len(self.tracked_player.walk_left)):
             #     pygame.transform.scale(self.tracked_player.walk_left[i], (20, 20))
+        elif self.surprise == "healing":
+            if "healing" not in self.tracked_player.status:
+                self.tracked_player.status.append("healing")
+            if "normal" in self.tracked_player.status:
+                self.tracked_player.status.remove("normal")
+            if self.tracked_player.health >= 3:
+                self.tracked_player.health = 5
+            else:
+                self.tracked_player.health += 2
+            
+
     
     def remove_surprise(self):
         if self.surprise == 'revert walking':
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
+            self.tracked_player.status.remove("revert walking")   # the status low
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
+            
         elif self.surprise == 'super man':
             self.tracked_player.is_super_man = False
             self.tracked_player.medium()
             self.tracked_player.is_enlarged = False
             self.tracked_player.is_medium = True
+            self.tracked_player.status.remove("super man")
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
 
+        elif self.surprise == "healing":
+            self.tracked_player.status.remove("healing")
+            if len(self.tracked_player.status) == 0:
+                self.tracked_player.status.append("normal")
+
+                
     def draw(self, win):
         if not self.ignited:
             win.blit(self.img, (self.x, self.y))
         # draw hitbox
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+class Button():
+    def __init__(self, x, y, str):
+        self.ps = (int(x), int(y))
+        self.str = str
+        font4 = pygame.font.SysFont("comicsansms", 40) # 按鈕字體、大小
+        self.off = font4.render(str, True, (170,0,0),(0,0,0)) 
+        self.on = font4.render(str, True, (255,0,0),(0,0,0))  
+        self.size = ([self.off.get_size()[0], self.off.get_size()[1]])
 
+    def range(self, x1, y1):
+        if x1 >= self.ps[0] and x1 <= self.ps[0]+self.size[0] and y1 >= self.ps[1] and y1 <=self.ps[1]+self.size[1]:
+            return True
 Weapon_dict= {
     "pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
     "shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-20,20]},

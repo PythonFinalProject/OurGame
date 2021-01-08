@@ -327,8 +327,8 @@ class Bullet():
     def draw(self, win):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
     
-    def out(self, win_width, win_height):
-        if self.x < 0 or self.x > 64*14 or self.y < 0 or self.y > 64*14:
+    def out(self, map_width, map_height):
+        if self.x < 0 or self.x >map_width or self.y < 0 or self.y > map_height:
             return True
         else:
             return False
@@ -356,7 +356,7 @@ class Explosion():
                 self.exp.append(img)   
 
     def draw(self, win):
-        if self.x < 480 and self.y < 480: 
+        if self.x < 832 and self.y < 832: 
             win.blit(self.exp[self.expcount], (self.x, self.y))
             self.expcount += 1
             if self.expcount >= 30:

@@ -7,6 +7,8 @@ from tilemap import *
 
 win_width = 480
 win_height = 480
+map_width = 896 
+map_height = 896
 pygame.init()
 
 win = pygame.display.set_mode((win_width,win_height)) # 遊戲視窗
@@ -169,7 +171,7 @@ while to_run:
                     for i in range(1,len(player.status)):
                         player_status += "+%s" %player.status[i]
                
-                
+                global text3, ps, text3s, pss
                 if player.name == "1P":    #畫出角色編號(1P or 2P)
                     img = pygame.image.load('./materials/1P.png')
                     text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
@@ -177,10 +179,9 @@ while to_run:
                         
                 elif player.name == "2P":                   
                     img = pygame.image.load('./materials/2P.png')
-                    text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
-                    ps = (90,20)                   
-                win.blit(img,(player.x+20, player.y+60))
-                win.blit(text3, ps)
+                    text3s = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
+                    pss = (90,25)                   
+                map_img.blit(img,(player.x+20, player.y+60))
                 
                 #text3 = font2.render(f"{player.name}:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
                 #text1P = font2.render(f"1P:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
@@ -191,13 +192,13 @@ while to_run:
                 #win.blit(text3, ps)
                 #win.blit(text1P,(100,0))
                 
-                
+                  
                 
             for bullet in player.bullet_list:
                 bullet.draw(map_img)
             # print(player.explode_list)
             for explosion in player.explode_list:
-                explosion.draw(map_img,player)
+                explosion.draw(map_img)
                 if explosion.remove == True:
                     player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
@@ -219,8 +220,9 @@ while to_run:
         # and be careful with the concept of layer
         camera.show.blit(text2, (0, 0))  
         camera.show.blit(text3, ps)
+        camera.show.blit(text3s,pss)
 
-        win.blit(camera.show, (0,0))
+        win.blit(camera.show, (0,0)) 
         
 
         pygame.display.update()
@@ -285,7 +287,8 @@ while to_run:
             if collision == False:
                 if first.target not in target_player:
                     first.target = choice(target_player)
-                first.chase(player_list[first.target])
+                if len(player_list) != 0:
+                    first.chase(player_list[first.target])
 
     def playerUpdate(player_list):
         for player in player_list:
@@ -333,10 +336,10 @@ while to_run:
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
                 # This will create enemy every 0.2 sec
-                enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
+                enemy_list.append(Enemy(random.randrange(1, map_width, 1), random.randrange(1, map_height, 1), 576//9, 256//4))
                 enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
-                coconut_list.append(Coconut(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1)))
+                coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_p] and p_time%2 == 0 and p_cool>60:
@@ -363,12 +366,19 @@ while to_run:
                 checkPlayerCoconutCollision(player)
                 
                 if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
-                    target_player.remove(i)  
+                    target_player.remove(i)
+                    player_status = "dead"
+                    if player.name == "1P":
+                        text3 = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
+                    else:
+                        text3s = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
 
-                player.control(run, win_width, win_height, player_selection[i])
+                    player_list.remove(player) 
+
+                player.control(run, map_width, map_height, player_selection[i])
                 for bullet in player.bullet_list:
                     bullet.fly()
-                    if bullet.out(win_width, win_height):
+                    if bullet.out(map_width, map_height):
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         continue
 
@@ -418,7 +428,7 @@ while to_run:
     s.sort()
     s = s[::-1]
     new_txt = []
-    for k in s[:10]:
+    for k in s[:10]: 
         new_txt.append([k,d[k]])
     with open("./score.txt", "w") as f:
         for l in range(len(new_txt)):

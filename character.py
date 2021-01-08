@@ -92,7 +92,7 @@ class Player(Character):
         self.status = ["normal"]   # the status low
         self.weapon_dict = WEAPON_DICT
 
-    def control(self, run, win_width, win_height, num_player):
+    def control(self, run, map_width, map_height, num_player):
         keys = pygame.key.get_pressed()
         player_control = self.player_selection[num_player]
         
@@ -102,52 +102,52 @@ class Player(Character):
             # self.down = False
             # self.up = False
             self.walkcount = 0
-        elif keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x > 0:
+        elif keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x > 32:
             self.x -= self.vel
             self.left = True
             self.right = False
             self.up = False
             self.down = False
-        elif keys[player_control["right"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x < win_width - self.width:
+        elif keys[player_control["right"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x +32 < map_width - self.width :
             self.x += self.vel
             self.right = True
             self.left = False
             self.up = False
             self.down = False
-        elif keys[player_control["up"]] and not keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y > 0:
+        elif keys[player_control["up"]] and not keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y > 32:
             self.y -= self.vel
             self.up = True
             self.down = False
             self.right = False
             self.left = False
-        elif keys[player_control["down"]] and not keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y < win_height - self.height:
+        elif keys[player_control["down"]] and not keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y +32 < map_height - self.height :
             self.y += self.vel
             self.down = True
             self.up = False
             self.right = False
             self.left = False
-        elif keys[player_control["left"]] and keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["down"]] and self.x > 0 and self.y > 0:
+        elif keys[player_control["left"]] and keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["down"]] and self.x > 32 and self.y > 32:
             self.x -= self.vel
             self.y -= self.vel
             self.left = True
             self.right = False
             self.up = True
             self.down = False
-        elif keys[player_control["left"]] and keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and self.x > 0 and self.y < win_height - self.height:
+        elif keys[player_control["left"]] and keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and self.x > 32 and self.y +32 < map_height - self.height :
             self.x -= self.vel
             self.y += self.vel
             self.left = True
             self.right = False
             self.down = True
             self.up = False
-        elif keys[player_control["right"]] and keys[player_control["up"]] and not keys[player_control["left"]] and not keys[player_control["down"]] and self.x < win_width - self.width and self.y > 0:
+        elif keys[player_control["right"]] and keys[player_control["up"]] and not keys[player_control["left"]] and not keys[player_control["down"]] and self.x +32 < map_width - self.width  and self.y > 32:
             self.x += self.vel
             self.y -= self.vel
             self.left = False
             self.right = True
             self.up = True
             self.down = False
-        elif keys[player_control["right"]] and keys[player_control["down"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and self.x < win_width - self.width and self.y < win_height - self.height:
+        elif keys[player_control["right"]] and keys[player_control["down"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and self.x +32 < map_width - self.width  and self.y +32 < map_height - self.height :
             self.x += self.vel
             self.y += self.vel
             self.left = False
@@ -355,7 +355,7 @@ class Explosion():
                 img = pygame.transform.scale(img, (75, 75))
                 self.exp.append(img)   
 
-    def draw(self, win, player):
+    def draw(self, win):
         if self.x < 480 and self.y < 480: 
             win.blit(self.exp[self.expcount], (self.x, self.y))
             self.expcount += 1

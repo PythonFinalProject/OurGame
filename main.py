@@ -133,30 +133,31 @@ while to_run:
     coconut_list.append(Coconut(222, 222))
     #bg = pygame.image.load('./materials/bg.jpg')
     #bg.convert()
-    Map = TiledMap('./materials/Level 1.tmx')
-    Map_img = Map.make_map()
-    camera = Camera(64*14, 64*14)
-    Map_rect = Map_img.get_rect()
-    def redrawGameWindow(win):
+    map = TiledMap('./materials/Level 1.tmx')
+    map_img = map.draw()
+    clear_map = map_img.copy() 
+    camera = Camera(win_width, win_height)
+
+    """
+    All the events happen on the map_img surface
+    then we use camera.show surface to track the movements of player
+    last, win.blit(camera.show, (0,0))
+    """
+    def redrawGameWindow(win, map_img, camera):
         #win.blit(bg, (0, 0))
-        print(Map_img.get_rect())
-        win.blit(Map_img, camera.apply_rect(Map_rect))
-        #print(Map_img.get_rect())
-        status = pygame.Surface((win_width, 45))  #the status row on top
-        status.convert()
-        status.fill((0,0,0))
-        win.blit(status,(0, 0))
+        map_img.blit(clear_map, (0,0))
+
         for player in player_list:
-            player.draw(win)
+            player.draw(map_img)
             if player.health > 0:  #生命歸零時不畫出角色血量 
                 health_bg1 = pygame.Surface((40,5))  #血條大小
                 health_bg1.convert()
                 health_bg1.fill((255,0,0))
-                win.blit(health_bg1, (player.x+10, player.y))
+                map_img.blit(health_bg1, (player.x+10, player.y))
                 health_bg2 = pygame.Surface((int(40*player.health/player.healthmax),5))  #血條大小
                 health_bg2.convert()
                 health_bg2.fill((0,255,0))
-                win.blit(health_bg2, (player.x+10, player.y))
+                map_img.blit(health_bg2, (player.x+10, player.y))
                 #win.blit(health_bg, (player.x+10, player.y))
                 #pygame.draw.rect(health_bg, (0,255,0), [0,0,100,100], 20)   #打不出來...
                 #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
@@ -193,22 +194,37 @@ while to_run:
                 
                 
             for bullet in player.bullet_list:
-                bullet.draw(win)
+                bullet.draw(map_img)
             # print(player.explode_list)
             for explosion in player.explode_list:
-                explosion.draw(win,player)
+                explosion.draw(map_img,player)
                 if explosion.remove == True:
                     player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
-            enemy.draw(win)
+            enemy.draw(map_img)
         
         for coconut in coconut_list:
-            coconut.draw(win)
+            coconut.draw(map_img)
         
+        status = pygame.Surface((win_width, 45))  #the status row on top
+        status.convert()
+        status.fill((0,0,0))
+        camera.show.blit(status,(0, 0))
         text2 = font2.render("score:%d" %score, True,(255,255,255), (0,0,0))  #畫出分數
-        win.blit(text2, (0, 0))   
+
+        # first track the position, then showing on the camera.show surface 
+        camera.update(player_list)
+        camera.show.blit(map_img, camera.tracking)
+        # remember that these text are always on the window --> camera.show surface
+        # and be careful with the concept of layer
+        camera.show.blit(text2, (0, 0))  
+        camera.show.blit(text3, ps)
+
+        win.blit(camera.show, (0,0))
         
+
         pygame.display.update()
+
 
     def checkPlayerEnemyCollision(player):
         global cold_time, score   # 受傷冷卻時間和分數
@@ -377,7 +393,7 @@ while to_run:
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
             camera.update(player_list)
-            redrawGameWindow(win)
+            redrawGameWindow(win, map_img, camera)
     """"""  #處理分數
     txt = []
     with open("./score.txt", "r") as f: 

@@ -127,8 +127,10 @@ while to_run:
     # Initialize enemy
     N = 1
     enemy_list = []
+    enemy_nest = [(272,272),(720,656)]
+    enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
     for i in range(N):
-        enemy_list.append(Enemy(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 576//9, 256//4))
+        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
         enemy_list[i].target = random.randrange(0, len(player_list), 1)
 
     coconut_list = []
@@ -220,7 +222,9 @@ while to_run:
         # and be careful with the concept of layer
         camera.show.blit(text2, (0, 0))  
         camera.show.blit(text3, ps)
-        camera.show.blit(text3s,pss)
+
+        if len(player_selection) == 2:
+            camera.show.blit(text3s,pss)
 
         win.blit(camera.show, (0,0)) 
         
@@ -336,7 +340,8 @@ while to_run:
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
                 # This will create enemy every 0.2 sec
-                enemy_list.append(Enemy(random.randrange(1, map_width, 1), random.randrange(1, map_height, 1), 576//9, 256//4))
+                enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
+                enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
                 enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
                 coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))

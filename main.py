@@ -67,33 +67,53 @@ while to_run:
                 run = [False]
                 n2 = False 
                 pygame.quit()
-    
-    while n1_set:    #set model    
+    help = False
+    while n1_set:    #set model        
         clock.tick(30)
         buttons = pygame.mouse.get_pressed()
-        x1, y1 = pygame.mouse.get_pos()
-        win.blit(start_bg,(0,0))
-                
-        button1 = Button(int(win_width/7*1.65), int(win_height/7*2), "SINGLE PLAY") #1.65 --> 比較置中
-        button2 = Button(int(win_width/7*1.5), int(win_height/7*4), "COOPERATIVE")
-        win.blit(button1.off, button1.ps)
-        win.blit(button2.off, button2.ps)    
-        if button1.range(x1,y1):
-            win.blit(button1.on, button1.ps)
-            if buttons[0]:  #若按下 進入
-                player_selection = ["1P"]   #從下面移到這裡，設定模式
-                print("SINGLE PLAY")
-                n1_set = False
-                run = [False]
-                n2 = False    
-        if button2.range(x1,y1):
-            win.blit(button2.on, button2.ps)
-            if buttons[0]:  #若按下 進入
-                player_selection = ["1P","2P"]   #從下面移到這裡，設定模式
-                print("COOPERATIVE")
-                n1_set = False
-                run = [False]
-                n2 = False
+        x1, y1 = pygame.mouse.get_pos() 
+        
+        if help == False:  
+            win.blit(start_bg,(0,0))
+            button1 = Button(int(win_width/7*1.65), int(win_height/7*2), "SINGLE PLAY") #1.65 --> 比較置中
+            button2 = Button(int(win_width/7*1.5), int(win_height/7*4), "COOPERATIVE")
+            button3 = Button(int(win_width/7*3), int(win_height/7*6), "HELP")        
+            win.blit(button1.off, button1.ps)
+            win.blit(button2.off, button2.ps)  
+            win.blit(button3.off, button3.ps)        
+            if button1.range(x1,y1):
+                win.blit(button1.on, button1.ps)
+                if buttons[0]:  #若按下 進入
+                    player_selection = ["1P"]   #從下面移到這裡，設定模式
+                    print("SINGLE PLAY")
+                    n1_set = False
+                    run = [False]
+                    n2 = False    
+            if button2.range(x1,y1):
+                win.blit(button2.on, button2.ps)
+                if buttons[0]:  #若按下 進入
+                    player_selection = ["1P","2P"]   #從下面移到這裡，設定模式
+                    print("COOPERATIVE")
+                    n1_set = False
+                    run = [False]
+                    n2 = False
+            if button3.range(x1,y1):
+                win.blit(button3.on, button3.ps)
+                if buttons[0]:  #若按下 進入
+                    help = True
+                    continue
+        else:         
+            help_bg = pygame.image.load("./materials/help.png")
+            help_bg.convert()
+            win.blit(help_bg,(0,0))
+            button3 = Button(350, 380, "BACK")
+            win.blit(button3.off, button3.ps) 
+            if button3.range(x1,y1):
+                win.blit(button3.on, button3.ps)
+                if buttons[0]:  #若按下 進入
+                    help = False
+                    continue
+            
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -174,26 +194,19 @@ while to_run:
                 if player.name == "1P":    #畫出角色編號(1P or 2P)
                     img = pygame.image.load('./materials/1P.png')
                     text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
-                    ps = (90,0)   
-                        
+                    ps1 = (90,0)
+                    #text4 = font2.render(f"{player.name}:{str(player.weapon_list)}", True, (255,255,255), (0,0,0))
+                    #ps2 = (0,40)    
                 elif player.name == "2P":                   
                     img = pygame.image.load('./materials/2P.png')
                     text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
-                    ps = (90,20)                   
+                    ps1 = (90,20)
+                    #text4 = font2.render(f"{player.name}:{str(player.weapon_list)}", True, (255,255,255), (0,0,0))
+                    #ps2 = (0,60)
                 win.blit(img,(player.x+20, player.y+60))
-                win.blit(text3, ps)
-                
-                #text3 = font2.render(f"{player.name}:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
-                #text1P = font2.render(f"1P:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
-                #if player.name == "1P":
-                #    ps = (400,0)
-                #elif player.name == "2P":
-                 #   ps = (200,0)
-                #win.blit(text3, ps)
-                #win.blit(text1P,(100,0))
-                
-                
-                
+                win.blit(text3, ps1)
+                #win.blit(text4, ps2)
+
             for bullet in player.bullet_list:
                 bullet.draw(win)
             # print(player.explode_list)

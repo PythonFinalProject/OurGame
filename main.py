@@ -4,6 +4,8 @@ from random import choice
 from character import Player, Enemy, Explosion, Coconut, Button
 from datetime import *
 from tilemap import *
+import pandas as pd 
+import csv
 
 win_width = 480
 win_height = 480
@@ -379,38 +381,29 @@ while to_run:
             camera.update(player_list)
             redrawGameWindow(win)
     """"""  #處理分數
-    txt = []
-    with open("./score.txt", "r") as f: 
-        for i in range(10):
-            a = f.read(23)[:-1].split(",")
-            if a[0] != "":
-                txt.append(a)
-    if score<10:
-        score_str = "0"+str(score)
-    else:
-        score_str = str(score)
-    day = str(datetime.today())[:19]
-    txt.append([score_str,day])
-    d = {}
-    #print(txt)
-    for j in range(len(txt)):
-        d[txt[j][0]] = txt[j][1]
-    #print(d)
-    s = []
-    for key in d:
-        s.append(key)
-    s.sort()
-    s = s[::-1]
-    new_txt = []
-    for k in s[:10]:
-        new_txt.append([k,d[k]])
-    with open("./score.txt", "w") as f:
-        for l in range(len(new_txt)):
-            f.write(new_txt[l][0]+","+new_txt[l][1]+"\n")
+    with open('./score.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([str(score), str(datetime.today())[:19]])        
+    df = pd.read_csv('./score.csv')  
+    select_df = pd.DataFrame(df.sort_values(by=['score']))
+    score_list = select_df["score"].values.tolist()
+    score_lists = [x for x in score_list if str(x) != 'nan']
+    time_list = select_df["time"].values.tolist()
+    time_lists = [x for x in time_list if str(x) != 'nan']
+    s = score_lists[::-1]
+    t = time_lists[::-1]
+    with open('./score.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['score', 'time'])
+        writer.writerow(["", ""])
+        for i in range(min(10,len(s))):
+            writer.writerow([s[i],t[i]])
     """"""  #結束畫面
     bg_over = pygame.image.load('./materials/overphoto.png')
     bg_over.convert()
-
+    bg_score = pygame.image.load('./materials/score.png')
+    bg_score.convert()
+    
     n2_score = False
     while n2:        
         clock.tick(30)
@@ -455,26 +448,34 @@ while to_run:
                     break                       
             pygame.display.update()
 
-        else:   #set model    
-            win.blit(start_bg,(0,0))
-            
-            font3 = pygame.font.SysFont("comicsansms", 12)
-            for i in range(len(new_txt)):
-                if i+1 < 10:
-                    num = "0"+str(i+1)
-                else:
-                    num = str(i+1)
-                text3 = font3.render(num+": "+new_txt[i][0]+"   "+new_txt[i][1], True, (0,0,0),(255,255,255))  #GameOver文字
-                win.blit(text3, (int(win_width/2-125), int(win_height/2-50+i*20)))   #
-            
-            button1 = Button(int(win_width/7*3), int(win_height/7*5+90), "BACK")       
-            win.blit(button1.off, button1.ps)    
+        else:   #score     
+            win.blit(bg_score,(0,0))
+            font3 = pygame.font.SysFont("simhei",25)  #配合字體大小 用simhei
+            df = pd.read_csv('./score.csv')  
+            select_df = pd.DataFrame(df)
+            s = str(select_df[1:11]).split("\n")
+            for i in range(len(s)):
+                text3 = font3.render(s[i], True, (0,0,0),(102,210,191))  
+                win.blit(text3, (int(win_width/10), win_height/7*1+i*25))
+                       
+            button1 = Button(int(win_width/7*2), int(win_height/7*5+90), "BACK")       
+            button2 = Button(int(win_width/7*4), int(win_height/7*5+90), "CLEAR") 
+            win.blit(button1.off, button1.ps)  
+            win.blit(button2.off, button2.ps)            
             if button1.range(x1,y1):
                 win.blit(button1.on, button1.ps)
                 if buttons[0]:  #若按下 進入
                     print("BACK")
                     n2_score = False
-  
+            if button2.range(x1,y1):
+                win.blit(button2.on, button2.ps)
+                if buttons[0]:  #若按下 進入
+                    print("clear")
+                    with open('./score.csv', 'w', newline='') as csvfile:
+                        writer = csv.writer(csvfile)
+                        writer.writerow(['score', 'time'])
+                        writer.writerow(["", ""])
+                        
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

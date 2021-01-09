@@ -56,3 +56,63 @@ class Camera:
         
         self.tracking = pygame.Rect(x, y, self.width, self.height)
 
+class Obstacle:
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.hitbox = [x, y, width, height]
+
+    def checkPlayerStoneCollision(self,player, obstacle_list):
+        player_hb_0 = player.hitbox[0]
+        player_hb_1 = player.hitbox[1]
+        player_hb_2 = player.hitbox[2]
+        player_hb_3 = player.hitbox[3]
+
+        for obstacle in obstacle_list:
+            obstacle_hb_0 = obstacle.hitbox[0] -10
+            obstacle_hb_1 = obstacle.hitbox[1] -10
+            obstacle_hb_2 = obstacle.hitbox[2] +10
+            obstacle_hb_3 = obstacle.hitbox[3] +10
+            if  player_hb_1 + player_hb_3 > obstacle_hb_1 and player_hb_1 < obstacle_hb_1 + obstacle_hb_3 and player_hb_0 + player_hb_2 > obstacle_hb_0 and player_hb_0 < obstacle_hb_0 + obstacle_hb_2:
+                if player.left == True:
+                    player.x += player.velx
+                elif player.right == True:
+                    player.x -= player.velx
+                elif player.up == True:
+                    player.y -= player.vely
+                elif player.down == True:
+                    player.y += player.vely
+
+    def checkEnemyStoneCollision(self, enemy, obstacle_list):
+        enemy_hb_0 = enemy.hitbox[0]
+        enemy_hb_1 = enemy.hitbox[1]
+        enemy_hb_2 = enemy.hitbox[2]
+        enemy_hb_3 = enemy.hitbox[3]
+
+        for obstacle in obstacle_list:
+            obstacle_hb_0 = obstacle.hitbox[0] -10
+            obstacle_hb_1 = obstacle.hitbox[1] -10
+            obstacle_hb_2 = obstacle.hitbox[2] +10
+            obstacle_hb_3 = obstacle.hitbox[3] +10
+            if  enemy_hb_1 + enemy_hb_3 > obstacle_hb_1 and enemy_hb_1 < obstacle_hb_1 + obstacle_hb_3 and enemy_hb_0 + enemy_hb_2 > obstacle_hb_0 and enemy_hb_0 < obstacle_hb_0 + obstacle_hb_2:
+                if enemy.left == True:
+                    enemy.x += 2
+                    enemy.y += 1  # bounce-off effect, or the enemy will stuck there
+                elif enemy.right == True:
+                    enemy.x -= 2
+                    enemy.y -= 1
+
+                elif enemy.up == True:
+                    enemy.y -= 2
+                    enemy.x -= 1
+                elif enemy.down == True:
+                    enemy.y += 2
+                    enemy.x += 1
+
+
+                
+

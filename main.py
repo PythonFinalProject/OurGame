@@ -142,6 +142,14 @@ while to_run:
     clear_map = map_img.copy() 
     camera = Camera(win_width, win_height)
 
+
+    obstacle_list = []
+    stone = Obstacle(896,896,64,64) # generate this to use obstacle.function
+    for tile_object in map.tmxdata.objects:
+        if tile_object.name == 'stone':
+            obstacle_list.append(Obstacle(tile_object.x, tile_object.y, 64, 64))
+        elif tile_object.name == 'block':
+            pass
     """
     All the events happen on the map_img surface
     then we use camera.show surface to track the movements of player
@@ -369,6 +377,8 @@ while to_run:
                 # print(player.shootLoop)
                 checkPlayerEnemyCollision(player)
                 checkPlayerCoconutCollision(player)
+                stone.checkPlayerStoneCollision(player, obstacle_list)
+                
                 
                 if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
                     target_player.remove(i)
@@ -377,8 +387,8 @@ while to_run:
                         text3 = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
                     else:
                         text3s = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
-
-                    player_list.remove(player) 
+                    if len(player_list) == 2:
+                        player_list.remove(player) 
 
                 player.control(run, map_width, map_height, player_selection[i])
                 for bullet in player.bullet_list:
@@ -389,9 +399,12 @@ while to_run:
 
                     for enemy in enemy_list:
                         enemy_hb_0 = enemy.hitbox[0]
-                        enemy_hb_1 = enemy.hitbox[1]
+                        enemy_hb_1 = enemy.hitbox[1] 
                         enemy_hb_2 = enemy.hitbox[2]
                         enemy_hb_3 = enemy.hitbox[3]
+
+                        stone.checkEnemyStoneCollision(enemy, obstacle_list)
+
                         if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
                             x = enemy_hb_0
                             y = enemy_hb_1
@@ -451,9 +464,9 @@ while to_run:
             win.blit(bg_over, (0, 0))
             font3 = pygame.font.SysFont("comicsansms", 25)
             text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
-            win.blit(text3, (int(win_width/2-60), int(win_height/2)))   #
+            win.blit(text3, (int(win_width/2-60), int(win_height/2 +50)))   #
             text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
-            win.blit(text4, (int(win_width/2-50), int(win_height/2+50)))
+            win.blit(text4, (int(win_width/2-50), int(win_height/2+90)))
             
             button1 = Button(int(win_width/7*0.5), int(win_height/7*5.5), "AGAIN")
             button2 = Button(int(win_width/7*2.8), int(win_height/7*5.5), "SCORE")

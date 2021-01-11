@@ -469,7 +469,7 @@ while to_run:
             s = str(select_df[1:11]).split("\n")
             for i in range(len(s)):
                 text3 = font3.render(s[i], True, (0,0,0),(102,210,191))  
-                win.blit(text3, (int(win_width/10), win_height/7*1+i*25))
+                win.blit(text3, (int(win_width/10), int(win_height/7*1+i*25)))
                        
             button1 = Button(int(win_width/7*2), int(win_height/7*5+90), "BACK")       
             button2 = Button(int(win_width/7*4), int(win_height/7*5+90), "CLEAR") 

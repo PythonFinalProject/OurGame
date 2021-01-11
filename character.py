@@ -457,6 +457,9 @@ class Coconut():
             if len(self.tracked_player.status) == 0:
                 self.tracked_player.status.append("normal")
 
+        
+        
+
                 
     def draw(self, win):
         if not self.ignited:

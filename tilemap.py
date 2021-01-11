@@ -1,20 +1,8 @@
 import pygame 
 import pytmx
 
-def collide_hit_rect(one, two):
-    return one.hit_rect.colliderect(two.rect)
 
-class Map:
-    def __init__(self, filename):
-        self.data = []
-        with open(filename, 'rt') as f:
-            for line in f:
-                self.data.append(line.strip())
 
-        self.tilewidth = len(self.data[0])
-        self.tileheight = len(self.data)
-        self.width = self.tilewidth * TILESIZE 
-        self.height = self.tileheight * TILESIZE
 
 class TiledMap:
     def __init__(self, filename):
@@ -33,38 +21,98 @@ class TiledMap:
                         surface.blit(tile, (x * self.tmxdata.tilewidth,
                                             y * self.tmxdata.tileheight))
 
-    def make_map(self):
+
+    def draw(self):
         temp_surface = pygame.Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface
 
 class Camera:
     def __init__(self, width, height):
-        self.camera = pygame.Rect(0, 0, width, height)
+        self.tracking = pygame.Rect(0, 0, width, height)
         self.width = width
         self.height = height
-
-    def apply(self, entity):
-        return entity.rect.move(self.camera.topleft)
-
-    def apply_rect(self, rect):
-        return rect.move(self.camera.topleft)
+        self.show = pygame.Surface((width, height))
 
     # track the movement of players to scroll map
     def update(self, player_list):
- 
+        x, y = 0, 0
         if len(player_list) == 1 :
-            x = -1*(player_list[0].x) + int(480)//2
-            print(player_list[0])
-            y = -1*(player_list[0].y)+ int(480)//2
+            x = -1*player_list[0].x - player_list[0].width + 480//2
+            y = -1*player_list[0].y - player_list[0].height + 480//2
         elif len(player_list) == 2 :
-            x = (-1*(player_list[0].x)-1*(player_list[1].x))//2+ int(64*14)# w in_width = 480
-            y = (-1*(player_list[0].y)-1*(player_list[1].y))//2+ int(64*14)# win_width = 480
-            print(x,y)
-        # limit scrolling to map size
+            x = (-1*(player_list[0].x)-1*(player_list[1].x))//2 - player_list[0].width + 480//2
+            y = (-1*(player_list[0].y)-1*(player_list[1].y))//2 - player_list[0].height + 480//2
+        
+        
+        # limit scrolling to map size  
         x = min(0, x)  # left
         y = min(0, y)  # top
-        x = max(-1*self.width + 480, x)   # right
-        y = max(-1*self.height + 480, y)  # bottom
-        self.camera = pygame.Rect(x, y, self.width, self.height)
+
+        
+        x = max(-415, x)  # right  -(480 - 64)
+        y = max(-415, y)  # bottom
+        
+        
+        self.tracking = pygame.Rect(x, y, self.width, self.height)
+
+class Obstacle:
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.hitbox = [x, y, width, height]
+
+    def checkPlayerStoneCollision(self,player, obstacle_list):
+        player_hb_0 = player.hitbox[0]
+        player_hb_1 = player.hitbox[1]
+        player_hb_2 = player.hitbox[2]
+        player_hb_3 = player.hitbox[3]
+
+        for obstacle in obstacle_list:
+            obstacle_hb_0 = obstacle.hitbox[0] -10
+            obstacle_hb_1 = obstacle.hitbox[1] -10
+            obstacle_hb_2 = obstacle.hitbox[2] +10
+            obstacle_hb_3 = obstacle.hitbox[3] +10
+            if  player_hb_1 + player_hb_3 > obstacle_hb_1 and player_hb_1 < obstacle_hb_1 + obstacle_hb_3 and player_hb_0 + player_hb_2 > obstacle_hb_0 and player_hb_0 < obstacle_hb_0 + obstacle_hb_2:
+                if player.left == True:
+                    player.x += player.velx
+                elif player.right == True:
+                    player.x -= player.velx
+                elif player.up == True:
+                    player.y -= player.vely
+                elif player.down == True:
+                    player.y += player.vely
+
+    def checkEnemyStoneCollision(self, enemy, obstacle_list):
+        enemy_hb_0 = enemy.hitbox[0]
+        enemy_hb_1 = enemy.hitbox[1]
+        enemy_hb_2 = enemy.hitbox[2]
+        enemy_hb_3 = enemy.hitbox[3]
+
+        for obstacle in obstacle_list:
+            obstacle_hb_0 = obstacle.hitbox[0] -10
+            obstacle_hb_1 = obstacle.hitbox[1] -10
+            obstacle_hb_2 = obstacle.hitbox[2] +10
+            obstacle_hb_3 = obstacle.hitbox[3] +10
+            if  enemy_hb_1 + enemy_hb_3 > obstacle_hb_1 and enemy_hb_1 < obstacle_hb_1 + obstacle_hb_3 and enemy_hb_0 + enemy_hb_2 > obstacle_hb_0 and enemy_hb_0 < obstacle_hb_0 + obstacle_hb_2:
+                if enemy.left == True:
+                    enemy.x += 2
+                    enemy.y += 1  # bounce-off effect, or the enemy will stuck there
+                elif enemy.right == True:
+                    enemy.x -= 2
+                    enemy.y -= 1
+
+                elif enemy.up == True:
+                    enemy.y -= 2
+                    enemy.x -= 1
+                elif enemy.down == True:
+                    enemy.y += 2
+                    enemy.x += 1
+
+
+                
 

@@ -7,6 +7,8 @@ from tilemap import *
 
 win_width = 480
 win_height = 480
+map_width = 896 
+map_height = 896
 pygame.init()
 
 win = pygame.display.set_mode((win_width,win_height)) # 遊戲視窗
@@ -125,38 +127,49 @@ while to_run:
     # Initialize enemy
     N = 1
     enemy_list = []
+    enemy_nest = [(272,272),(720,656)]
+    enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
     for i in range(N):
-        enemy_list.append(Enemy(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 576//9, 256//4))
+        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
         enemy_list[i].target = random.randrange(0, len(player_list), 1)
 
     coconut_list = []
     coconut_list.append(Coconut(222, 222))
     #bg = pygame.image.load('./materials/bg.jpg')
     #bg.convert()
-    Map = TiledMap('./materials/Level 1.tmx')
-    Map_img = Map.make_map()
-    camera = Camera(64*14, 64*14)
-    Map_rect = Map_img.get_rect()
-    def redrawGameWindow(win):
+    map = TiledMap('./materials/Level 1.tmx')
+    map_img = map.draw()
+    clear_map = map_img.copy() 
+    camera = Camera(win_width, win_height)
+
+
+    obstacle_list = []
+    stone = Obstacle(896,896,64,64) # generate this to use obstacle.function
+    for tile_object in map.tmxdata.objects:
+        if tile_object.name == 'stone':
+            obstacle_list.append(Obstacle(tile_object.x, tile_object.y, 64, 64))
+        elif tile_object.name == 'block':
+            pass
+    """
+    All the events happen on the map_img surface
+    then we use camera.show surface to track the movements of player
+    last, win.blit(camera.show, (0,0))
+    """
+    def redrawGameWindow(win, map_img, camera):
         #win.blit(bg, (0, 0))
-        print(Map_img.get_rect())
-        win.blit(Map_img, camera.apply_rect(Map_rect))
-        #print(Map_img.get_rect())
-        status = pygame.Surface((win_width, 45))  #the status row on top
-        status.convert()
-        status.fill((0,0,0))
-        win.blit(status,(0, 0))
+        map_img.blit(clear_map, (0,0))
+
         for player in player_list:
-            player.draw(win)
+            player.draw(map_img)
             if player.health > 0:  #生命歸零時不畫出角色血量 
                 health_bg1 = pygame.Surface((40,5))  #血條大小
                 health_bg1.convert()
                 health_bg1.fill((255,0,0))
-                win.blit(health_bg1, (player.x+10, player.y))
+                map_img.blit(health_bg1, (player.x+10, player.y))
                 health_bg2 = pygame.Surface((int(40*player.health/player.healthmax),5))  #血條大小
                 health_bg2.convert()
                 health_bg2.fill((0,255,0))
-                win.blit(health_bg2, (player.x+10, player.y))
+                map_img.blit(health_bg2, (player.x+10, player.y))
                 #win.blit(health_bg, (player.x+10, player.y))
                 #pygame.draw.rect(health_bg, (0,255,0), [0,0,100,100], 20)   #打不出來...
                 #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
@@ -168,7 +181,7 @@ while to_run:
                     for i in range(1,len(player.status)):
                         player_status += "+%s" %player.status[i]
                
-                
+                global text3, ps, text3s, pss
                 if player.name == "1P":    #畫出角色編號(1P or 2P)
                     img = pygame.image.load('./materials/1P.png')
                     text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
@@ -176,10 +189,9 @@ while to_run:
                         
                 elif player.name == "2P":                   
                     img = pygame.image.load('./materials/2P.png')
-                    text3 = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
-                    ps = (90,20)                   
-                win.blit(img,(player.x+20, player.y+60))
-                win.blit(text3, ps)
+                    text3s = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
+                    pss = (90,25)                   
+                map_img.blit(img,(player.x+20, player.y+60))
                 
                 #text3 = font2.render(f"{player.name}:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
                 #text1P = font2.render(f"1P:{player.weapon}", True, (0,0,0),(255,255,255))  #畫出武器
@@ -190,25 +202,43 @@ while to_run:
                 #win.blit(text3, ps)
                 #win.blit(text1P,(100,0))
                 
-                
+                  
                 
             for bullet in player.bullet_list:
-                bullet.draw(win)
+                bullet.draw(map_img)
             # print(player.explode_list)
             for explosion in player.explode_list:
-                explosion.draw(win,player)
+                explosion.draw(map_img)
                 if explosion.remove == True:
                     player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
-            enemy.draw(win)
+            enemy.draw(map_img)
         
         for coconut in coconut_list:
-            coconut.draw(win)
+            coconut.draw(map_img)
         
+        status = pygame.Surface((win_width, 45))  #the status row on top
+        status.convert()
+        status.fill((0,0,0))
+        camera.show.blit(status,(0, 0))
         text2 = font2.render("score:%d" %score, True,(255,255,255), (0,0,0))  #畫出分數
-        win.blit(text2, (0, 0))   
+
+        # first track the position, then showing on the camera.show surface 
+        camera.update(player_list)
+        camera.show.blit(map_img, camera.tracking)
+        # remember that these text are always on the window --> camera.show surface
+        # and be careful with the concept of layer
+        camera.show.blit(text2, (0, 0))  
+        camera.show.blit(text3, ps)
+
+        if len(player_selection) == 2:
+            camera.show.blit(text3s,pss)
+
+        win.blit(camera.show, (0,0)) 
         
+
         pygame.display.update()
+
 
     def checkPlayerEnemyCollision(player):
         global cold_time, score   # 受傷冷卻時間和分數
@@ -269,7 +299,8 @@ while to_run:
             if collision == False:
                 if first.target not in target_player:
                     first.target = choice(target_player)
-                first.chase(player_list[first.target])
+                if len(player_list) != 0:
+                    first.chase(player_list[first.target])
 
     def playerUpdate(player_list):
         for player in player_list:
@@ -317,10 +348,11 @@ while to_run:
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
                 # This will create enemy every 0.2 sec
-                enemy_list.append(Enemy(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1), 576//9, 256//4))
+                enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
+                enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
                 enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
-                coconut_list.append(Coconut(random.randrange(1, win_width, 1), random.randrange(1, win_height, 1)))
+                coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_p] and p_time%2 == 0 and p_cool>60:
@@ -345,22 +377,34 @@ while to_run:
                 # print(player.shootLoop)
                 checkPlayerEnemyCollision(player)
                 checkPlayerCoconutCollision(player)
+                stone.checkPlayerStoneCollision(player, obstacle_list)
+                
                 
                 if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
-                    target_player.remove(i)  
+                    target_player.remove(i)
+                    player_status = "dead"
+                    if player.name == "1P":
+                        text3 = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
+                    else:
+                        text3s = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
+                    if len(player_list) == 2:
+                        player_list.remove(player) 
 
-                player.control(run, win_width, win_height, player_selection[i])
+                player.control(run, map_width, map_height, player_selection[i])
                 for bullet in player.bullet_list:
                     bullet.fly()
-                    if bullet.out(win_width, win_height):
+                    if bullet.out(map_width, map_height):
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         continue
 
                     for enemy in enemy_list:
                         enemy_hb_0 = enemy.hitbox[0]
-                        enemy_hb_1 = enemy.hitbox[1]
+                        enemy_hb_1 = enemy.hitbox[1] 
                         enemy_hb_2 = enemy.hitbox[2]
                         enemy_hb_3 = enemy.hitbox[3]
+
+                        stone.checkEnemyStoneCollision(enemy, obstacle_list)
+
                         if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
                             x = enemy_hb_0
                             y = enemy_hb_1
@@ -377,7 +421,7 @@ while to_run:
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
             camera.update(player_list)
-            redrawGameWindow(win)
+            redrawGameWindow(win, map_img, camera)
     """"""  #處理分數
     txt = []
     with open("./score.txt", "r") as f: 
@@ -402,7 +446,7 @@ while to_run:
     s.sort()
     s = s[::-1]
     new_txt = []
-    for k in s[:10]:
+    for k in s[:10]: 
         new_txt.append([k,d[k]])
     with open("./score.txt", "w") as f:
         for l in range(len(new_txt)):
@@ -420,9 +464,9 @@ while to_run:
             win.blit(bg_over, (0, 0))
             font3 = pygame.font.SysFont("comicsansms", 25)
             text3 = font3.render("GameOver", True, (0,0,0),(255,255,255))  #GameOver文字
-            win.blit(text3, (int(win_width/2-60), int(win_height/2)))   #
+            win.blit(text3, (int(win_width/2-60), int(win_height/2 +50)))   #
             text4 = font3.render("score: %d" %score, True, (0,0,0),(255,255,255))  #score文字
-            win.blit(text4, (int(win_width/2-50), int(win_height/2+50)))
+            win.blit(text4, (int(win_width/2-50), int(win_height/2+90)))
             
             button1 = Button(int(win_width/7*0.5), int(win_height/7*5.5), "AGAIN")
             button2 = Button(int(win_width/7*2.8), int(win_height/7*5.5), "SCORE")

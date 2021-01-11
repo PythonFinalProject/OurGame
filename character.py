@@ -13,7 +13,8 @@ class Character():
         self.y = y
         self.width = width
         self.height = height
-        self.vel = 3
+        self.velx = 3
+        self.vely = 3
         self.health = 5
         self.healthmax = self.health  #繪製血條用
         self.up = False
@@ -92,7 +93,7 @@ class Player(Character):
         self.status = ["normal"]   # the status low
         self.weapon_dict = WEAPON_DICT
 
-    def control(self, run, win_width, win_height, num_player):
+    def control(self, run, map_width, map_height, num_player):
         keys = pygame.key.get_pressed()
         player_control = self.player_selection[num_player]
         
@@ -102,54 +103,54 @@ class Player(Character):
             # self.down = False
             # self.up = False
             self.walkcount = 0
-        elif keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x > 0:
-            self.x -= self.vel
+        elif keys[player_control["left"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x > 32:
+            self.x -= self.velx
             self.left = True
             self.right = False
             self.up = False
             self.down = False
-        elif keys[player_control["right"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x < win_width - self.width:
-            self.x += self.vel
+        elif keys[player_control["right"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and not keys[player_control["down"]] and self.x +32 < map_width - self.width :
+            self.x += self.velx
             self.right = True
             self.left = False
             self.up = False
             self.down = False
-        elif keys[player_control["up"]] and not keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y > 0:
-            self.y -= self.vel
+        elif keys[player_control["up"]] and not keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y > 32:
+            self.y -= self.vely
             self.up = True
             self.down = False
             self.right = False
             self.left = False
-        elif keys[player_control["down"]] and not keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y < win_height - self.height:
-            self.y += self.vel
+        elif keys[player_control["down"]] and not keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["left"]] and self.y +32 < map_height - self.height :
+            self.y += self.vely
             self.down = True
             self.up = False
             self.right = False
             self.left = False
-        elif keys[player_control["left"]] and keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["down"]] and self.x > 0 and self.y > 0:
-            self.x -= self.vel
-            self.y -= self.vel
+        elif keys[player_control["left"]] and keys[player_control["up"]] and not keys[player_control["right"]] and not keys[player_control["down"]] and self.x > 32 and self.y > 32:
+            self.x -= self.velx
+            self.y -= self.vely
             self.left = True
             self.right = False
             self.up = True
             self.down = False
-        elif keys[player_control["left"]] and keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and self.x > 0 and self.y < win_height - self.height:
-            self.x -= self.vel
-            self.y += self.vel
+        elif keys[player_control["left"]] and keys[player_control["down"]] and not keys[player_control["right"]] and not keys[player_control["up"]] and self.x > 32 and self.y +32 < map_height - self.height :
+            self.x -= self.velx
+            self.y += self.vely
             self.left = True
             self.right = False
             self.down = True
             self.up = False
-        elif keys[player_control["right"]] and keys[player_control["up"]] and not keys[player_control["left"]] and not keys[player_control["down"]] and self.x < win_width - self.width and self.y > 0:
-            self.x += self.vel
-            self.y -= self.vel
+        elif keys[player_control["right"]] and keys[player_control["up"]] and not keys[player_control["left"]] and not keys[player_control["down"]] and self.x +32 < map_width - self.width  and self.y > 32:
+            self.x += self.velx
+            self.y -= self.vely
             self.left = False
             self.right = True
             self.up = True
             self.down = False
-        elif keys[player_control["right"]] and keys[player_control["down"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and self.x < win_width - self.width and self.y < win_height - self.height:
-            self.x += self.vel
-            self.y += self.vel
+        elif keys[player_control["right"]] and keys[player_control["down"]] and not keys[player_control["left"]] and not keys[player_control["up"]] and self.x +32 < map_width - self.width  and self.y +32 < map_height - self.height :
+            self.x += self.velx
+            self.y += self.vely
             self.left = False
             self.right = True
             self.up = False
@@ -243,7 +244,8 @@ class Enemy(Character):
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
-        self.vel = 1
+        self.velx = 1
+        self.vely = 1 
         pygame.time.set_timer(CREATE_ENEMY_EVENT, 1000) # Create enemy every 1 sec
     
     def chase(self, player):
@@ -251,8 +253,8 @@ class Enemy(Character):
         dy = (player.y - self.y)# + random.randrange(-200, 200, 1)
         dl = (dx**2 + dy**2)**0.5
         if dl !=0:
-            self.x += self.vel*dx/dl
-            self.y += self.vel*dy/dl
+            self.x += self.velx*dx/dl
+            self.y += self.vely*dy/dl
         
         if dx > 0:
             self.right = True
@@ -327,8 +329,8 @@ class Bullet():
     def draw(self, win):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
     
-    def out(self, win_width, win_height):
-        if self.x < 0 or self.x > 64*14 or self.y < 0 or self.y > 64*14:
+    def out(self, map_width, map_height):
+        if self.x < 0 or self.x >map_width or self.y < 0 or self.y > map_height:
             return True
         else:
             return False
@@ -355,8 +357,8 @@ class Explosion():
                 img = pygame.transform.scale(img, (75, 75))
                 self.exp.append(img)   
 
-    def draw(self, win, player):
-        if self.x < 480 and self.y < 480: 
+    def draw(self, win):
+        if self.x < 832 and self.y < 832: 
             win.blit(self.exp[self.expcount], (self.x, self.y))
             self.expcount += 1
             if self.expcount >= 30:
@@ -469,7 +471,7 @@ class Button():
         self.str = str
         font4 = pygame.font.SysFont("comicsansms", 40) # 按鈕字體、大小
         self.off = font4.render(str, True, (170,0,0),(0,0,0)) 
-        self.on = font4.render(str, True, (255,0,0),(0,0,0))  
+        self.on = font4.render(str, True, (255,255,255),(255,0,0))  
         self.size = ([self.off.get_size()[0], self.off.get_size()[1]])
 
     def range(self, x1, y1):

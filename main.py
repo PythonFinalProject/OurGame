@@ -172,12 +172,17 @@ while to_run:
 
 
     obstacle_list = []
+    proof_list = []
     stone = Obstacle(896,896,64,64) # generate this to use obstacle.function
+    tree = Proof(896,896,64,64) # generate this to use Proof.function
     for tile_object in map.tmxdata.objects:
         if tile_object.name == 'stone':
             obstacle_list.append(Obstacle(tile_object.x, tile_object.y, 64, 64))
         elif tile_object.name == 'block':
             pass
+        elif tile_object.name == 'proof':
+            proof_list.append(Proof(tile_object.x, tile_object.y, 64, 64))
+  
     """
     All the events happen on the map_img surface
     then we use camera.show surface to track the movements of player
@@ -430,13 +435,16 @@ while to_run:
 
                 player.control(run, map_width, map_height, player.name)
                 for bullet in player.bullet_list:
-                    bullet.fly()
-                    if bullet.out(map_width, map_height):
+                    bullet.fly() 
+                    if bullet.out(map_width, map_height): 
+                        player.bullet_list.pop(player.bullet_list.index(bullet))
+                        continue
+                    if tree.checkBulletProofCollision(bullet, proof_list) == True:
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         continue
 
                     for enemy in enemy_list:
-                        enemy_hb_0 = enemy.hitbox[0]
+                        enemy_hb_0 = enemy.hitbox[0] 
                         enemy_hb_1 = enemy.hitbox[1] 
                         enemy_hb_2 = enemy.hitbox[2]
                         enemy_hb_3 = enemy.hitbox[3]

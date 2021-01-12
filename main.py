@@ -22,6 +22,8 @@ clock = pygame.time.Clock() # 遊戲更新速度
 start_bg = pygame.image.load("./materials/startphoto(480).png")
 start_bg.convert()
 win.blit(start_bg, (0, 0))
+gamename = pygame.image.load("./materials/gamename.png")
+gamename.convert()
 
 #預設值
 to_run = True
@@ -36,7 +38,7 @@ while to_run:
         buttons = pygame.mouse.get_pressed()
         x1, y1 = pygame.mouse.get_pos()
         win.blit(start_bg,(0,0))
-        
+        win.blit(gamename, (90, 100))
         button1 = Button(int(win_width/7*1), int(win_height/7*5.5), "PLAY")  # 按鈕位置、文字修改處
         button2 = Button(int(win_width/7*2.8), int(win_height/7*5.5), "QUIT")# 2.8 --> 比較對齊
         button3 = Button(int(win_width/7*5), int(win_height/7*5.5), "SET")

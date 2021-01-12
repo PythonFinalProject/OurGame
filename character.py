@@ -245,7 +245,7 @@ class Enemy(Character):
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.velx = 1
         self.vely = 1 
-        pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*3,700)) # Create enemy every 1-score*5/1000 sec, 
+        pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)

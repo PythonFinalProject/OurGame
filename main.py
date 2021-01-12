@@ -361,9 +361,6 @@ while to_run:
         clock.tick(60) # Set FPS
         if score<100 and score-oldscore>=10:
             oldscore = score
-        if score>100 and score-oldscore>=50 and level<3:
-            level +=1
-            oldscore = score
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
@@ -376,11 +373,9 @@ while to_run:
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
                 # This will create enemy every 1-score*5/1000 sec
-                #print(level)
-                for i in range(level):
-                    enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
-                    enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
-                    enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+                enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
+                enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
+                enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
                 coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             

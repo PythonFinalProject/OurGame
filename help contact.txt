@@ -1,0 +1,12 @@
+"SINGLE PLAY" means that only one person play. Use "WSAD" to contral character and "Space Bar" to shot.
+
+"COOPERATIVE" mean that another person can join the game. Use "IKJL" to contral character and "/" to shot.
+
+In the game, players need to atteck "Enemy" to get score. There are some surprisepack on the map which provide new weapons and some special effects. Players can change weapons by use "shift" and any special effect will vanish after 5 seconds.
+
+Players can use "Q" to quit and "P" to pause.
+
+
+The game was created by 
+機械四李冠廷、機械二翁佳菱、物理二陳法華、物理一廖昱全	
+fron National Taiwan University in 2020 year.

@@ -7,6 +7,8 @@ from tilemap import *
 import pandas as pd 
 import csv
 
+
+
 win_width = 480
 win_height = 480
 map_width = 896 
@@ -132,7 +134,8 @@ while to_run:
 
     """""" #遊戲畫面
 
-    score = 0
+    score = 100
+    oldscore = score
     font2 = pygame.font.SysFont("comicsansms", 15)   #score 
 
     CREATE_ENEMY_EVENT = pygame.USEREVENT
@@ -152,7 +155,7 @@ while to_run:
     enemy_nest = [(272,272),(720,656)]
     enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
     for i in range(N):
-        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
+        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4,oldscore))
         enemy_list[i].target = random.randrange(0, len(player_list), 1)
 
     coconut_list = []
@@ -351,11 +354,16 @@ while to_run:
     p_time = 0  #暫停按下次數
     p_cool = 0  #暫停冷卻時間
     pause = False
+    level = 1
     while run[0]:
         # for player in player_list:
             # print(id(player.walk_sheet[0]))
         clock.tick(60) # Set FPS
-           
+        if score<100 and score-oldscore>=10:
+            oldscore = score
+        if score>100 and score-oldscore>=50 and level<3:
+            level +=1
+            oldscore = score
         # Pygame event control, including (1) check running status, (2) appending enemy in a specific time period
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
@@ -367,10 +375,12 @@ while to_run:
                 break
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
-                # This will create enemy every 0.2 sec
-                enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
-                enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4))
-                enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+                # This will create enemy every 1-score*5/1000 sec
+                #print(level)
+                for i in range(level):
+                    enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
+                    enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
+                    enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
                 coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             
@@ -407,8 +417,8 @@ while to_run:
                         text3 = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
                     else:
                         text3s = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
-                    if len(player_list) == 2:
-                        player_list.remove(player) 
+                    #if len(player_list) == 2:
+                        #player_list.remove(player) 
 
                 player.control(run, map_width, map_height, player_selection[i])
                 for bullet in player.bullet_list:
@@ -517,7 +527,7 @@ while to_run:
             select_df = pd.DataFrame(df)
             s = str(select_df[1:11]).split("\n")
             for i in range(len(s)):
-                text3 = font3.render(s[i], True, (0,0,0),(102,210,191))  
+                text3 = font3.render(s[i], True, (0,0,0),(100,200,200))  
                 win.blit(text3, (int(win_width/10), int(win_height/7*1+i*25)))
                        
             button1 = Button(int(win_width/7*2), int(win_height/7*5+90), "BACK")       

@@ -28,7 +28,7 @@ class Character():
         # self.walk_sheet = []
         # self.hitbox = None
         self.walk_pause = None
-        self.walkcount = 0
+        self.walkcount = 0        
     
     def set_hitbox(self, x_offset, y_offset, width, height):
         self.hitbox = (self.x + x_offset, self.y + y_offset, width, height)
@@ -236,17 +236,16 @@ class Player(Character):
             for i in range(self.weapon_dict[self.weapon]['bullet_count']):
                 self.bullet_list.append(Bullet(x=self.x+self.width//2, y=self.y+self.height//2, facing=facing, radius=self.weapon_dict[self.weapon]['bullet_radius'], velocity=self.weapon_dict[self.weapon]['vel'], damage=self.weapon_dict[self.weapon]['damage'], weapon=self.weapon, rotate=self.weapon_dict[self.weapon]['bullet_rotate'][0]+i*self.weapon_dict[self.weapon]['bullet_rotate'][1]))
 
-
 # 576*256
 class Enemy(Character):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height,difficult):
         super().__init__(x, y, width, height)
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.velx = 1
         self.vely = 1 
-        pygame.time.set_timer(CREATE_ENEMY_EVENT, 1000) # Create enemy every 1 sec
+        pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*3,700)) # Create enemy every 1-score*5/1000 sec, 
     
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)

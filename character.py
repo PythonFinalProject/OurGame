@@ -205,7 +205,7 @@ class Player(Character):
             elif self.is_enlarged:
                 self.set_hitbox(15, 8, int(self.width*0.8), int(self.height*1.2))
             # draw hitbox
-            pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+            # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def hit(self):
         if self.health > 0: 
@@ -288,7 +288,7 @@ class Enemy(Character):
         super().draw(win, frames)
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         # draw hitbox
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
     def __init__(self, x, y, facing, radius, velocity, damage, color=(0, 0, 0), weapon = '1.pistol', rotate = 0):

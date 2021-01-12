@@ -285,7 +285,7 @@ while to_run:
                     score += 1 # 撞死敵人後分數加1
                     
     
-    def checkPlayerCoconutCollision(player):
+    def checkPlayerCoconutCollision(player, enemy_list):
         player_hb_0 = player.hitbox[0]
         player_hb_1 = player.hitbox[1]
         player_hb_2 = player.hitbox[2]
@@ -296,7 +296,7 @@ while to_run:
             coconut_hb_2 = coconut.hitbox[2]
             coconut_hb_3 = coconut.hitbox[3]
             if not coconut.ignited and player_hb_1 + player_hb_3 > coconut_hb_1 and player_hb_1 < coconut_hb_1 + coconut_hb_3 and player_hb_0 + player_hb_2 > coconut_hb_0 and player_hb_0 < coconut_hb_0 + coconut_hb_2:
-                coconut.create_surprise(player)
+                coconut.create_surprise(player, enemy_list)
                 
 
 
@@ -345,14 +345,14 @@ while to_run:
             #     player.enlarge()
             # elif not player.is_enlarged:
             #     player.medium()
-    def coconutUpdate(coconut_list):
+    def coconutUpdate(coconut_list, enemy_list):
         for coconut in coconut_list:
             if coconut.ignited == True:
                 #print(coconut.surprise)
-                coconut.update_surprise()
+                coconut.update_surprise(enemy_list)
                 #print(coconut.surprise_count , coconut.SURPRISE_TIME_TICK)
                 if coconut.surprise_count > coconut.SURPRISE_TIME_TICK:
-                    coconut.remove_surprise()
+                    coconut.remove_surprise(enemy_list)
                     coconut_list.pop(coconut_list.index(coconut))
 
     p_time = 0  #暫停按下次數
@@ -409,7 +409,7 @@ while to_run:
             for i, player in enumerate(player_list):
                 # print(player.shootLoop)
                 checkPlayerEnemyCollision(player)
-                checkPlayerCoconutCollision(player)
+                checkPlayerCoconutCollision(player, enemy_list)
                 stone.checkPlayerStoneCollision(player, obstacle_list)
                 
 
@@ -455,7 +455,7 @@ while to_run:
                 # print(len(player.bullet_list))
             # checkEnemyEnemyCollision()
             playerUpdate(player_list)
-            coconutUpdate(coconut_list)
+            coconutUpdate(coconut_list, enemy_list)
             camera.update(player_list)
             redrawGameWindow(win, map_img, camera)
     """"""  #處理分數

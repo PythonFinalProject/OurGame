@@ -375,7 +375,7 @@ class Coconut():
         self.offset = 8
         self.ignited = False
         self.read_image()
-        self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle", "healing"]
+        self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle", "healing", "enemy_stop", "enemy_fast"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
 
@@ -383,15 +383,15 @@ class Coconut():
         img = pygame.image.load('./materials/coconut.png')
         self.img = pygame.transform.scale(img, (self.width, self.height))
 
-    def create_surprise(self, player):
+    def create_surprise(self, player, enemy_list):
         self.ignited = True
         self.tracked_player = player
         self.surprise = random.choice(self.surprise_list)
         self.SURPRISE_TIME_TICK = 300
         self.surprise_count = 0
-        self.update_surprise()
+        self.update_surprise(enemy_list)
     
-    def update_surprise(self):
+    def update_surprise(self, enemy_list):
         # print(id(self.tracked_player.walk_sheet[0]))
         self.surprise_count += 1
         if self.surprise == "revert walking":
@@ -436,8 +436,19 @@ class Coconut():
                 self.tracked_player.health = 5
             else:
                 self.tracked_player.health += 2
+        
+        elif self.surprise == "enemy_stop":
+            for enemy in enemy_list:
+                enemy.velx = 0
+                enemy.vely = 0
+
+        elif self.surprise == "enemy_fast":
+            for enemy in enemy_list:
+                enemy.velx = 3
+                enemy.vely = 3
+
     
-    def remove_surprise(self):
+    def remove_surprise(self, enemy_list):
         if self.surprise == 'revert walking':
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
             self.tracked_player.status.remove("revert walking")   # the status low
@@ -457,6 +468,16 @@ class Coconut():
             self.tracked_player.status.remove("healing")
             if len(self.tracked_player.status) == 0:
                 self.tracked_player.status.append("normal")
+
+        elif self.surprise == "enemy_stop":
+            for enemy in enemy_list:
+                enemy.velx = 1
+                enemy.vely = 1
+
+        elif self.surprise == "enemy_fast":
+            for enemy in enemy_list:
+                enemy.velx = 1
+                enemy.vely = 1
 
                 
     def draw(self, win):

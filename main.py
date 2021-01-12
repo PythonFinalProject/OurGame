@@ -395,7 +395,7 @@ while to_run:
                 run[0] = False
                 pygame.time.wait(1000) # 短暫暫停
                 break
-            checkEnemyEnemyCollision()
+            
             #print("new")
             # Moving the player with "WASD"
             for i, player in enumerate(player_list):
@@ -406,7 +406,7 @@ while to_run:
                 
 
                 if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
-                    player_list.remove(player)
+                    # player_list.remove(player)
                     target_player.remove(i)
                     player_status = "dead"
                     if player.name == "1P":
@@ -444,6 +444,7 @@ while to_run:
 
             # print(len(player_list))
                 # print(len(player.bullet_list))
+            checkEnemyEnemyCollision()
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
             camera.update(player_list)

@@ -134,7 +134,7 @@ while to_run:
 
     """""" #遊戲畫面
 
-    score = 100
+    score = 0
     oldscore = score
     font2 = pygame.font.SysFont("comicsansms", 15)   #score 
 

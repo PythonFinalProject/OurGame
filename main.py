@@ -145,10 +145,10 @@ while to_run:
     # player = Player(300, 410, 591//9, 261//4)
     
     player_list = []
-    target_player = []  #敵方目標清單
+    # target_player = []  #敵方目標清單
     for i in range(len(player_selection)):
         player_list.append(Player(random.randrange(1, 400, 1), random.randrange(1, 400, 1), 591//9, 261//4, player_selection[i]))  #新增player_selection[i]，區別兩隻角色
-        target_player.append(i)
+        # target_player.append(i)
     # Initialize enemy
     N = 1
     enemy_list = []
@@ -156,7 +156,8 @@ while to_run:
     enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
     for i in range(N):
         enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4,oldscore))
-        enemy_list[i].target = random.randrange(0, len(player_list), 1)
+        # enemy_list[i].target = random.randrange(0, len(player_list), 1)
+        enemy_list[i].target = random.choice(player_list)
 
     coconut_list = []
     coconut_list.append(Coconut(222, 222))
@@ -320,10 +321,13 @@ while to_run:
                     # print("collision")
                     break
             if collision == False:
-                if first.target not in target_player:
-                    first.target = choice(target_player)
+                # if first.target not in target_player:
+                #     first.target = choice(target_player)
+                if first.target not in player_list:
+                    first.target = choice(player_list)
                 if len(player_list) != 0:
-                    first.chase(player_list[first.target])
+                    # first.chase(player_list[first.target])
+                    first.chase(first.target)
 
     def playerUpdate(player_list):
         for player in player_list:
@@ -356,6 +360,8 @@ while to_run:
     pause = False
     level = 1
     while run[0]:
+        # print(player_list)
+        # print(target_player)
         # for player in player_list:
             # print(id(player.walk_sheet[0]))
         clock.tick(60) # Set FPS
@@ -375,7 +381,8 @@ while to_run:
                 # This will create enemy every 1-score*5/1000 sec
                 enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
                 enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
-                enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+                enemy_list[-1].target = choice(player_list)
+                # enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
                 coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             
@@ -391,11 +398,12 @@ while to_run:
                 pause = False
         p_cool += 1
         if pause == False:        
-            if len(target_player) == 0: # 如果沒有目標 退出遊戲
+            if len(player_list) == 0: # 如果沒有目標 退出遊戲
                 run[0] = False
                 pygame.time.wait(1000) # 短暫暫停
                 break
             
+            checkEnemyEnemyCollision()
             #print("new")
             # Moving the player with "WASD"
             for i, player in enumerate(player_list):
@@ -405,9 +413,10 @@ while to_run:
                 stone.checkPlayerStoneCollision(player, obstacle_list)
                 
 
-                if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
-                    # player_list.remove(player)
-                    target_player.remove(i)
+                if (player.health <= 0):
+                #  and i in target_player: # 生命歸零時 移出目標清單
+                    player_list.pop(player_list.index(player))
+                    # target_player.remove(i)
                     player_status = "dead"
                     if player.name == "1P":
                         text3 = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
@@ -416,7 +425,7 @@ while to_run:
                     #if len(player_list) == 2:
                         #player_list.remove(player) 
 
-                player.control(run, map_width, map_height, player_selection[i])
+                player.control(run, map_width, map_height, player.name)
                 for bullet in player.bullet_list:
                     bullet.fly()
                     if bullet.out(map_width, map_height):
@@ -444,7 +453,7 @@ while to_run:
 
             # print(len(player_list))
                 # print(len(player.bullet_list))
-            checkEnemyEnemyCollision()
+            # checkEnemyEnemyCollision()
             playerUpdate(player_list)
             coconutUpdate(coconut_list)
             camera.update(player_list)

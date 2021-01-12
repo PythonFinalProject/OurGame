@@ -361,6 +361,7 @@ while to_run:
     p_cool = 0  #暫停冷卻時間
     pause = False
     level = 1
+    
     while run[0]:
         # print(player_list)
         # print(target_player)

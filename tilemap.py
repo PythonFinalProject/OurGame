@@ -80,9 +80,9 @@ class Obstacle:
             obstacle_hb_3 = obstacle.hitbox[3]
             if  player_hb_1 + player_hb_3 > obstacle_hb_1 and player_hb_1 < obstacle_hb_1 + obstacle_hb_3 and player_hb_0 + player_hb_2 > obstacle_hb_0 and player_hb_0 < obstacle_hb_0 + obstacle_hb_2:
                 if player.left == True:
-                    player.x += player.velx
-                elif player.right == True:
                     player.x -= player.velx
+                elif player.right == True:
+                    player.x += player.velx
                 elif player.up == True:
                     player.y -= player.vely
                 elif player.down == True:
@@ -95,10 +95,10 @@ class Obstacle:
         enemy_hb_3 = enemy.hitbox[3]
 
         for obstacle in obstacle_list:
-            obstacle_hb_0 = obstacle.hitbox[0] -10
-            obstacle_hb_1 = obstacle.hitbox[1] -10
-            obstacle_hb_2 = obstacle.hitbox[2] +10
-            obstacle_hb_3 = obstacle.hitbox[3] +10
+            obstacle_hb_0 = obstacle.hitbox[0] 
+            obstacle_hb_1 = obstacle.hitbox[1] 
+            obstacle_hb_2 = obstacle.hitbox[2] 
+            obstacle_hb_3 = obstacle.hitbox[3] 
             if  enemy_hb_1 + enemy_hb_3 > obstacle_hb_1 and enemy_hb_1 < obstacle_hb_1 + obstacle_hb_3 and enemy_hb_0 + enemy_hb_2 > obstacle_hb_0 and enemy_hb_0 < obstacle_hb_0 + obstacle_hb_2:
                 if enemy.left == True:
                     enemy.x += 2

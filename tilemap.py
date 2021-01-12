@@ -80,9 +80,9 @@ class Obstacle:
             obstacle_hb_3 = obstacle.hitbox[3]
             if  player_hb_1 + player_hb_3 > obstacle_hb_1 and player_hb_1 < obstacle_hb_1 + obstacle_hb_3 and player_hb_0 + player_hb_2 > obstacle_hb_0 and player_hb_0 < obstacle_hb_0 + obstacle_hb_2:
                 if player.left == True:
-                    player.x -= player.velx
-                elif player.right == True:
                     player.x += player.velx
+                elif player.right == True:
+                    player.x -= player.velx
                 elif player.up == True:
                     player.y -= player.vely
                 elif player.down == True:
@@ -102,18 +102,18 @@ class Obstacle:
             if  enemy_hb_1 + enemy_hb_3 > obstacle_hb_1 and enemy_hb_1 < obstacle_hb_1 + obstacle_hb_3 and enemy_hb_0 + enemy_hb_2 > obstacle_hb_0 and enemy_hb_0 < obstacle_hb_0 + obstacle_hb_2:
                 if enemy.left == True:
                     enemy.x += 2
-                    enemy.y += 1  # bounce-off effect, or the enemy will stuck there
+                    # enemy.y += 1  # bounce-off effect, or the enemy will stuck there
                 elif enemy.right == True:
                     enemy.x -= 2
-                    enemy.y -= 1
+                    # enemy.y -= 1
 
                 elif enemy.up == True:
                     enemy.y -= 2
-                    enemy.x -= 1
+                    # enemy.x -= 1
                     
                 elif enemy.down == True:
                     enemy.y += 2
-                    enemy.x += 1
+                    # enemy.x += 1
 
 class Proof:
     def __init__(self, x, y, width, height):

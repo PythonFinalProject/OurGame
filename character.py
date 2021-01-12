@@ -288,7 +288,7 @@ class Enemy(Character):
         super().draw(win, frames)
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
         # draw hitbox
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class Bullet():
     def __init__(self, x, y, facing, radius, velocity, damage, color=(0, 0, 0), weapon = '1.pistol', rotate = 0):
@@ -395,6 +395,7 @@ class Coconut():
     def update_surprise(self, enemy_list):
         # print(id(self.tracked_player.walk_sheet[0]))
         self.surprise_count += 1
+
         if self.surprise == "revert walking":
             self.tracked_player.player_selection = {"1P": {"left": pygame.K_d, "right": pygame.K_a, "up": pygame.K_s, "down": pygame.K_w, "shoot": pygame.K_SPACE, "switch": pygame.K_LSHIFT}, "2P": {"left": pygame.K_l, "right": pygame.K_j, "up": pygame.K_k, "down": pygame.K_i, "shoot": pygame.K_SLASH, "switch": pygame.K_RSHIFT}}
             if "revert walking" not in self.tracked_player.status:
@@ -484,6 +485,11 @@ class Coconut():
     def draw(self, win):
         if not self.ignited:
             win.blit(self.img, (self.x, self.y))
+        else:
+            font = pygame.font.SysFont("comicsansms", 15)
+            text = font.render(self.surprise, True, (255,255,255), (0,0,0))
+            win.blit(text, (self.x, self.y))
+
         # draw hitbox
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 class Button():

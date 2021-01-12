@@ -192,6 +192,9 @@ while to_run:
         #win.blit(bg, (0, 0))
         map_img.blit(clear_map, (0,0))
 
+        for coconut in coconut_list:
+            coconut.draw(map_img)
+
         for player in player_list:
             player.draw(map_img)
             if player.health > 0:  #生命歸零時不畫出角色血量 
@@ -244,9 +247,6 @@ while to_run:
                     player.explode_list.pop(player.explode_list.index(explosion))
         for enemy in enemy_list:
             enemy.draw(map_img)
-        
-        for coconut in coconut_list:
-            coconut.draw(map_img)
         
         status = pygame.Surface((win_width, 45))  #the status row on top
         status.convert()
@@ -410,9 +410,11 @@ while to_run:
                 run[0] = False
                 pygame.time.wait(1000) # 短暫暫停
                 break
-            
+
+            # Update enemy
             checkEnemyEnemyCollision()
-            #print("new")
+            for enemy in enemy_list:
+                stone.checkEnemyStoneCollision(enemy, obstacle_list)
             # Moving the player with "WASD"
             for i, player in enumerate(player_list):
                 # print(player.shootLoop)
@@ -449,7 +451,7 @@ while to_run:
                         enemy_hb_2 = enemy.hitbox[2]
                         enemy_hb_3 = enemy.hitbox[3]
 
-                        stone.checkEnemyStoneCollision(enemy, obstacle_list)
+                        # stone.checkEnemyStoneCollision(enemy, obstacle_list)
 
                         if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
                             x = enemy_hb_0

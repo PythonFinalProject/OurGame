@@ -115,6 +115,24 @@ class Obstacle:
                     enemy.y += 2
                     enemy.x += 1
 
+class Proof:
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.hitbox = [x, y, width, height]
+
+    def checkBulletProofCollision(self,bullet, proof_list):
+        for proof in proof_list:
+            proof_hb_0 = proof.hitbox[0]
+            proof_hb_1 = proof.hitbox[1]
+            proof_hb_2 = proof.hitbox[2]
+            proof_hb_3 = proof.hitbox[3]
+            if bullet.x > proof_hb_0 and bullet.x < proof_hb_0 + proof_hb_2 and bullet.y > proof_hb_1 and bullet.y < proof_hb_1 + proof_hb_3:
+                return True
 
                 
 

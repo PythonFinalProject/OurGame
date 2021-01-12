@@ -238,7 +238,7 @@ class Player(Character):
 
 # 576*256
 class Enemy(Character):
-    def __init__(self, x, y, width, height,difficult):
+    def __init__(self, x, y, width, height, difficult):
         super().__init__(x, y, width, height)
         self.target = None
         self.set_hitbox(15, 10, self.width - 35, self.height - 10)
@@ -246,7 +246,8 @@ class Enemy(Character):
         self.velx = 1
         self.vely = 1 
         pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
-    
+        # pygame.time.set_timer(CREATE_ENEMY_EVENT, 50)
+
     def chase(self, player):
         dx = (player.x - self.x)# + random.randrange(-200, 200, 1)
         dy = (player.y - self.y)# + random.randrange(-200, 200, 1)

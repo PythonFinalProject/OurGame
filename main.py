@@ -157,7 +157,7 @@ while to_run:
     enemy_nest = [(272,272),(720,656)]
     enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
     for i in range(N):
-        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4,oldscore))
+        enemy_list.append(Enemy(enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))
         # enemy_list[i].target = random.randrange(0, len(player_list), 1)
         enemy_list[i].target = random.choice(player_list)
 

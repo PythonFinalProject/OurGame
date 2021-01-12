@@ -404,8 +404,9 @@ while to_run:
                 checkPlayerCoconutCollision(player)
                 stone.checkPlayerStoneCollision(player, obstacle_list)
                 
-                
+
                 if (player.health <= 0) and i in target_player: # 生命歸零時 移出目標清單
+                    player_list.remove(player)
                     target_player.remove(i)
                     player_status = "dead"
                     if player.name == "1P":

@@ -245,6 +245,7 @@ while to_run:
                 explosion.draw(map_img)
                 if explosion.remove == True:
                     player.explode_list.pop(player.explode_list.index(explosion))
+        
         for enemy in enemy_list:
             enemy.draw(map_img)
         
@@ -348,6 +349,7 @@ while to_run:
             if player.switchLoop >= player.switchCoolDown:
                 player.switchLoop =0 
                 player.switchAvailabe = True
+            player.cold_time += 1 # 計算受傷冷卻時間
             # if player.is_enlarged:
             #     player.enlarge()
             # elif not player.is_enlarged:
@@ -415,6 +417,7 @@ while to_run:
             checkEnemyEnemyCollision()
             for enemy in enemy_list:
                 stone.checkEnemyStoneCollision(enemy, obstacle_list)
+            
             # Moving the player with "WASD"
             for i, player in enumerate(player_list):
                 # print(player.shootLoop)
@@ -451,8 +454,6 @@ while to_run:
                         enemy_hb_2 = enemy.hitbox[2]
                         enemy_hb_3 = enemy.hitbox[3]
 
-                        # stone.checkEnemyStoneCollision(enemy, obstacle_list)
-
                         if bullet.x > enemy_hb_0 and bullet.x < enemy_hb_0 + enemy_hb_2 and bullet.y > enemy_hb_1 and bullet.y < enemy_hb_1 + enemy_hb_3:
                             x = enemy_hb_0
                             y = enemy_hb_1
@@ -462,7 +463,7 @@ while to_run:
                             enemy_list.pop(enemy_list.index(enemy))
                             score += 1 # 打死敵人後分數加1
                             break
-                player.cold_time += 1 # 計算受傷冷卻時間
+                # player.cold_time += 1 # 計算受傷冷卻時間
 
             # print(len(player_list))
                 # print(len(player.bullet_list))

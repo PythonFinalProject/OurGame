@@ -311,6 +311,7 @@ class Bullet():
             facing_adjust = copy.deepcopy(self.facing)
             if self.weapon == '4.missle':
                 self.rotate += random.randrange(-50, 50, 1)
+                
             rotate_adjust = self.rotate
             if self.facing[0] == 0:
                 facing_adjust[0] = 1

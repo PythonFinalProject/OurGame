@@ -1,5 +1,6 @@
 import pygame 
 import pytmx
+from character import Explosion
 
 
 
@@ -136,3 +137,73 @@ class Proof:
 
                 
 
+
+class Block:
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.hitbox = [x, y, width, height]
+                   
+    def draw(self, win):
+        win.blit(pygame.image.load('./materials/block.png'), (self.x, self.y))
+
+    def checkPlayerBlockCollision(self,player, block_list):
+        player_hb_0 = player.hitbox[0]
+        player_hb_1 = player.hitbox[1]
+        player_hb_2 = player.hitbox[2]
+        player_hb_3 = player.hitbox[3]
+
+        for block in block_list:
+            block_hb_0 = block.hitbox[0]
+            block_hb_1 = block.hitbox[1]
+            block_hb_2 = block.hitbox[2]
+            block_hb_3 = block.hitbox[3]
+            if  player_hb_1 + player_hb_3 > block_hb_1 and player_hb_1 < block_hb_1 + block_hb_3 and player_hb_0 + player_hb_2 > block_hb_0 and player_hb_0 < block_hb_0 + block_hb_2:
+                if player.left == True:
+                    player.x += player.velx
+                elif player.right == True:
+                    player.x -= player.velx
+                elif player.up == True:
+                    player.y += player.vely
+                elif player.down == True:
+                    player.y -= player.vely
+
+    def checkEnemyBlockCollision(self, enemy, block_list):
+        enemy_hb_0 = enemy.hitbox[0]
+        enemy_hb_1 = enemy.hitbox[1]
+        enemy_hb_2 = enemy.hitbox[2]
+        enemy_hb_3 = enemy.hitbox[3]
+
+        for block in block_list:
+            block_hb_0 = block.hitbox[0] 
+            block_hb_1 = block.hitbox[1] 
+            block_hb_2 = block.hitbox[2] 
+            block_hb_3 = block.hitbox[3] 
+            if  enemy_hb_1 + enemy_hb_3 > block_hb_1 and enemy_hb_1 < block_hb_1 + block_hb_3 and enemy_hb_0 + enemy_hb_2 > block_hb_0 and enemy_hb_0 < block_hb_0 + block_hb_2:
+                if enemy.left == True:
+                    enemy.x += 1
+                elif enemy.right == True:
+                    enemy.x -= 1
+                elif enemy.up == True:
+                    enemy.y += 2
+                elif enemy.down == True:
+                    enemy.y -= 2
+
+    def checkBlockBulletCollision(self, bullet, block_list, player):
+        for block in block_list:
+            block_hb_0 = block.hitbox[0]
+            block_hb_1 = block.hitbox[1]
+            block_hb_2 = block.hitbox[2]
+            block_hb_3 = block.hitbox[3]
+            if bullet.x > block_hb_0 and bullet.x < block_hb_0 + block_hb_2 and bullet.y > block_hb_1 and bullet.y < block_hb_1 + block_hb_3:
+                x = block_hb_0 
+                y = block_hb_1 
+                exp = Explosion(x,y)
+                player.explode_list.append(exp)
+                player.bullet_list.pop(player.bullet_list.index(bullet))
+                block_list.pop(block_list.index(block))
+                break

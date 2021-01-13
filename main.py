@@ -173,13 +173,14 @@ while to_run:
 
     obstacle_list = []
     proof_list = []
+    block_list = []
     stone = Obstacle(896,896,64,64) # generate this to use obstacle.function
     tree = Proof(896,896,64,64) # generate this to use Proof.function
     for tile_object in map.tmxdata.objects:
         if tile_object.name == 'stone':
             obstacle_list.append(Obstacle(tile_object.x, tile_object.y, 64, 64))
         elif tile_object.name == 'block':
-            pass
+            block_list.append(Block(tile_object.x, tile_object.y, 64, 64))
         elif tile_object.name == 'proof':
             proof_list.append(Proof(tile_object.x, tile_object.y, 64, 64))
   
@@ -194,7 +195,9 @@ while to_run:
 
         for coconut in coconut_list:
             coconut.draw(map_img)
-
+        if len(block_list) != 0:
+            for block in block_list:
+                block.draw(map_img)
         for player in player_list:
             player.draw(map_img)
             if player.health > 0:  #生命歸零時不畫出角色血量 
@@ -417,6 +420,9 @@ while to_run:
             checkEnemyEnemyCollision()
             for enemy in enemy_list:
                 stone.checkEnemyStoneCollision(enemy, obstacle_list)
+
+                if len(block_list) != 0:
+                    block_list[0].checkEnemyBlockCollision(enemy, block_list)
             
             # Moving the player with "WASD"
             for i, player in enumerate(player_list):
@@ -425,6 +431,8 @@ while to_run:
                 checkPlayerCoconutCollision(player, enemy_list)
                 stone.checkPlayerStoneCollision(player, obstacle_list)
                 
+                if len(block_list) != 0:
+                    block_list[0].checkPlayerBlockCollision(player, block_list)
 
                 if (player.health <= 0):
                 #  and i in target_player: # 生命歸零時 移出目標清單
@@ -447,7 +455,11 @@ while to_run:
                     if tree.checkBulletProofCollision(bullet, proof_list) == True:
                         player.bullet_list.pop(player.bullet_list.index(bullet))
                         continue
+                    
+                    if len(block_list) != 0:
+                        block_list[0].checkBlockBulletCollision(bullet, block_list, player)
 
+                        
                     for enemy in enemy_list:
                         enemy_hb_0 = enemy.hitbox[0] 
                         enemy_hb_1 = enemy.hitbox[1] 
@@ -467,7 +479,7 @@ while to_run:
 
             # print(len(player_list))
                 # print(len(player.bullet_list))
-            # checkEnemyEnemyCollision()
+            # checkEnemyEnemyCollision()  
             playerUpdate(player_list)
             coconutUpdate(coconut_list, enemy_list)
             camera.update(player_list)

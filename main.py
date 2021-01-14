@@ -16,7 +16,7 @@ map_height = 896
 pygame.init()
 
 win = pygame.display.set_mode((win_width,win_height)) # 遊戲視窗
-pygame.display.set_caption("First Game") # 给視窗取名
+pygame.display.set_caption("ZombiNTU") # 给視窗取名
 clock = pygame.time.Clock() # 遊戲更新速度
 
 start_bg = pygame.image.load("./materials/startphoto(480).png")

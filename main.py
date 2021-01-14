@@ -8,7 +8,6 @@ import pandas as pd
 import csv
 
 
-
 win_width = 480
 win_height = 480
 map_width = 896 
@@ -28,7 +27,7 @@ gamename.convert()
 #預設值
 to_run = True
 n1 = True
-player_selection = ["1P","2P"]
+player_selection = ["1P"]
 while to_run: 
     run = [True]
     n2 = True
@@ -229,7 +228,7 @@ while to_run:
                 elif player.name == "2P":                   
                     img = pygame.image.load('./materials/2P.png')
                     text3s = font2.render(f"{player.name}:{player.weapon}/{player_status}", True, (255,255,255), (0,0,0))  #畫出武器
-                    pss = (90,25)   
+                    pss = (90, 20)   
 
                 map_img.blit(img,(player.x+20, player.y+60))
                 win.blit(text3, ps)
@@ -254,13 +253,25 @@ while to_run:
         status.fill((0,0,0))
         camera.show.blit(status,(0, 0))
         text2 = font2.render("score:%d" %score, True,(255,255,255), (0,0,0))  #畫出分數
-
+        
+        if len(enemy_list)<25:
+            text4 = font2.render("enemy:%d/30" %len(enemy_list), True,(255,255,255), (0,0,0))  #畫出敵人數
+            text4_1 = font2.render("" , True,(255,255,255), (0,0,0))  #畫出敵人數     
+            #camera.show.blit(text4, (win_width-text4.get_width(), 0))
+        else:
+            text4 = font2.render("enemy:%d/30" %len(enemy_list), True,(255,255,255), (0,0,0))  #畫出敵人數
+            font4_1 = pygame.font.SysFont("comicsansms", 40) 
+            text4_1 = font4_1.render("warn!!!" , True,(255,0,0), (0,0,0))  #警告            
+        
+        #print(text4.get_width())
         # first track the position, then showing on the camera.show surface 
         camera.update(player_list)
         camera.show.blit(map_img, camera.tracking)
         # remember that these text are always on the window --> camera.show surface
         # and be careful with the concept of layer
-        camera.show.blit(text2, (0, 0))  
+        camera.show.blit(text2, (0, 0))
+        camera.show.blit(text4, (win_width-text4.get_width(), 0))      #畫出敵人數
+        camera.show.blit(text4_1, (win_width-text4_1.get_width(), 20)) #警告
         camera.show.blit(text3, ps)
 
         if len(player_selection) == 2:
@@ -328,14 +339,14 @@ while to_run:
                     collision = True
                     # print("collision")
                     break
-            if collision == False:
+            #if collision == False:
                 # if first.target not in target_player:
                 #     first.target = choice(target_player)
-                if first.target not in player_list:
-                    first.target = choice(player_list)
-                if len(player_list) != 0:
-                    # first.chase(player_list[first.target])
-                    first.chase(first.target)
+            if first.target not in player_list:
+                first.target = choice(player_list)
+            if len(player_list) != 0:
+                # first.chase(player_list[first.target])
+                first.chase(first.target)
 
     def playerUpdate(player_list):
         for player in player_list:
@@ -425,6 +436,8 @@ while to_run:
                 checkPlayerCoconutCollision(player, enemy_list)
                 stone.checkPlayerStoneCollision(player, obstacle_list)
                 
+                if len(enemy_list)>=30:
+                    player.health = 0                    
 
                 if (player.health <= 0):
                 #  and i in target_player: # 生命歸零時 移出目標清單

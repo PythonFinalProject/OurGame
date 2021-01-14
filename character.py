@@ -92,6 +92,8 @@ class Player(Character):
         self.name = name
         self.status = ["normal"]   # the status low
         self.weapon_dict = WEAPON_DICT
+        self.weapon_bullet = {"1.pistol":-1}
+        self.b = []
 
     def control(self, run, map_width, map_height, num_player):
         keys = pygame.key.get_pressed()
@@ -162,6 +164,7 @@ class Player(Character):
                 self.shootAvailabe = False
 
         if keys[player_control["switch"]]:
+            print(self.weapon_list)
             if self.switchLoop == 0:
                 self.switchAvailabe = False
                 if self.weapon != self.weapon_list[-1]:
@@ -230,7 +233,17 @@ class Player(Character):
                 facing[1] = -1
             elif self.down:
                 facing[1] = 1
-
+            if self.weapon != "1.pistol":
+                self.weapon_bullet[self.weapon] -= 1
+                print(self.weapon_bullet[self.weapon])
+                if self.weapon_bullet[self.weapon] == 0:
+                    print(self.weapon_list)                   
+                    if self.weapon != "1.pistol":
+                        self.b.append(self.weapon)
+                        self.weapon_list.remove(self.weapon)
+                        print(self.weapon_list)
+                    self.weapon = "1.pistol"
+                    
             # if (self.right or self.left) and (self.up or self.down):
             #     facing = [x*(2**0.5) for x in facing]
             for i in range(self.weapon_dict[self.weapon]['bullet_count']):
@@ -245,7 +258,8 @@ class Enemy(Character):
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.velx = 1
         self.vely = 1 
-        pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
+        #pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
+        pygame.time.set_timer(CREATE_ENEMY_EVENT,5000)
         # pygame.time.set_timer(CREATE_ENEMY_EVENT, 50)
 
     def chase(self, player):
@@ -418,17 +432,26 @@ class Coconut():
         elif self.surprise == "add shotgun":
             if "2.shotgun" not in self.tracked_player.weapon_list:
                 self.tracked_player.weapon_list.append("2.shotgun")
+                print("aaa")
                 self.tracked_player.weapon_list.sort()
+                self.tracked_player.weapon_bullet["2.shotgun"] = self.tracked_player.weapon_dict["2.shotgun"]['bullet_total']
+                
         
         elif self.surprise == "add bomb":
             if "3.bomb" not in self.tracked_player.weapon_list:
                 self.tracked_player.weapon_list.append("3.bomb")
+                print("aaa")
                 self.tracked_player.weapon_list.sort()
+                self.tracked_player.weapon_bullet["3.bomb"] = self.tracked_player.weapon_dict["3.bomb"]['bullet_total']
+                
         
         elif self.surprise == "add missle":
             if "4.missle" not in self.tracked_player.weapon_list:
+                print("aaa")
                 self.tracked_player.weapon_list.append("4.missle")
                 self.tracked_player.weapon_list.sort()
+                self.tracked_player.weapon_bullet["4.missle"] = self.tracked_player.weapon_dict["4.missle"]['bullet_total']
+                
         
         elif self.surprise == "healing":
             if "healing" not in self.tracked_player.status:
@@ -481,8 +504,7 @@ class Coconut():
             for enemy in enemy_list:
                 enemy.velx = 1
                 enemy.vely = 1
-
-                
+         
     def draw(self, win):
         if not self.ignited:
             win.blit(self.img, (self.x, self.y))
@@ -506,8 +528,8 @@ class Button():
         if x1 >= self.ps[0] and x1 <= self.ps[0]+self.size[0] and y1 >= self.ps[1] and y1 <=self.ps[1]+self.size[1]:
             return True
 WEAPON_DICT = {
-    "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
-    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15]},
-    "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0]},
-    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6]}
+    "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':-10},
+    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15], 'bullet_total':10},
+    "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':10},
+    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6], 'bullet_total':10}
     }

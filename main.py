@@ -401,7 +401,13 @@ while to_run:
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
                 # This will create enemy every 1-score*5/1000 sec
                 enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
-                enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
+                e = False
+                for enemy in enemy_list:
+                    if enemy.velx == 0 and enemy.vely == 0:
+                        e = True
+                        break
+                if e ==False:
+                    enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
                 enemy_list[-1].target = choice(player_list)
                 # enemy_list[-1].target = random.randrange(0, len(player_list), 1)
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
@@ -450,7 +456,7 @@ while to_run:
                         text3s = font2.render(f"{player.name}:{player_status}", True, (255,255,255), (0,0,0)) 
                     #if len(player_list) == 2:
                         #player_list.remove(player) 
-
+                
                 player.control(run, map_width, map_height, player.name)
                 for bullet in player.bullet_list:
                     bullet.fly() 

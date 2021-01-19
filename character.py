@@ -70,7 +70,7 @@ class Player(Character):
     def __init__(self, x, y, width, height, name):
         super().__init__(x, y, width, height)
         self.right = True
-        self.set_hitbox(15, 5, self.width-35, self.height-10)
+        self.set_hitbox(15, 15, self.width-35, self.height-10)   #y_offset = 5 --> 15 Through the slit
         self.DIR = 4
         self.STEP = 9
         self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
@@ -531,7 +531,7 @@ class Button():
             return True
 WEAPON_DICT = {
     "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':-1},
-    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15], 'bullet_total':20},
+    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15], 'bullet_total':30},
     "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':20},
-    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6], 'bullet_total':20}
+    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6], 'bullet_total':50}
     }

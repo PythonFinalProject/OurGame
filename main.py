@@ -193,6 +193,10 @@ while to_run:
 
         for coconut in coconut_list:
             coconut.draw(map_img)
+
+        if len(block_list) != 0:
+            for block in block_list:
+                block.draw(map_img)
         
         def drawScoreandBullet(abovecolor, belowcolor, x, y, remain, total): #畫血條和彈藥量
             if remain != -1:
@@ -458,7 +462,10 @@ while to_run:
                 checkPlayerEnemyCollision(player)
                 checkPlayerCoconutCollision(player, enemy_list)
                 stone.checkPlayerStoneCollision(player, obstacle_list)
-                
+
+                if len(block_list) != 0:
+                    block_list[0].checkPlayerBlockCollision(player, block_list)                
+                    
                 if len(enemy_list)>=30:
                     player.health = 0                    
 

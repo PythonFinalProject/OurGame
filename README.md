@@ -51,6 +51,22 @@
   
   For example, players can choose either single or cooperative mode or get help by clicking Set button.
   
-  After the game starts, some basic game information are displayed on the game window, for example, players' health, current weapon, and the bullet left for special weapon (So don't relax even if you get really strong weapon!). The game ends if all the players died or more than 30 enemies appear on the map (Notice the "Warning" for the latter).
+  After the game starts, some basic game information are displayed on the game window, for example, players' health, current weapon, and the bullet left for special weapon     (So don't relax even if you get really strong weapon!). The game ends if all the players died or more than 30 enemies appear on the map (Notice the "Warning" for the         latter) .
   
-  Another game interface design is displayed if the game ends. The Score button displayed the top ten highest scores recorded(automatically) and the record can be clear if you want a brandnew start :) Press "Again" to restart a game.
+  Another game interface design is displayed if the game ends. The Score displayed the top ten highest scores recorded (the score are recorded automatically) and users can     easily reset the score record if they want. Click "Again" to restart a game.
+  
+- ChiaLingWeng
+  
+  
+  There are 3 different types of objects in our maps, Stone, Proof and Block.
+  
+  -Stone:
+  It acts as an obstacle for Characters moving on x axis, but an accelerating tunnel for Characters moving on y axis. 
+  
+  -Proof:
+  Just as literally, this kind of object is bullet-proof and the bullet will disappear after colliding with it.
+  
+  -Block:
+  Different from Stone, Characters can't pass it from any direction, but it's destroyable with bullet.
+
+

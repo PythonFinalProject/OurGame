@@ -42,7 +42,9 @@
 
 ## contents
 - chen
+
   ![](https://i.imgur.com/OnOvF2S.png)
+  
   The game has "while" to make itself work continuously and use "if else" to decise how to work with parametrics. There are some buttons contraling them  in the game. 
   Before playing the game, players can choose single or cooperative mold and get help by use "set".
   When the game start, platers can cleared see role's left boold. If they get some new weapons by eating coconuts, the bollet limit of new weapons will disolay on the top of role. The game end when all roles died and there are more than 30 enemys on the map to avoid the computer crashes.

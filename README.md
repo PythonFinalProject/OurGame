@@ -56,7 +56,8 @@
   Another game interface design is displayed if the game ends. The Score displayed the top ten highest scores recorded (the score are recorded automatically) and users can     easily reset the score record if they want. Click "Again" to restart a game.
   
 - ChiaLingWeng
-  
+
+  ![](https://i.imgur.com/map_demo.png)
   
   There are 3 different types of objects in our maps, Stone, Proof and Block.
   

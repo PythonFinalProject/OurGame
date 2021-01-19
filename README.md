@@ -39,3 +39,11 @@
 
 - PNG warning (12/21):
     - Previouly everytime Nelson created character using the png file "blue_woman_sprite.png" and "skull_sprite.png", the command window would print out warning message: "libpng warning: iCCP: known incorrect sRGB profile". This issue was caused because Libpng-1.6 is more stringent about checking ICC profiles than previous versions. We can ignore the warning. To get rid of it, remove the iCCP chunk from the PNG image by running the command "mogrify *.png" (Nelson ran it in WSL2 device, might not be able to run in Windows powershell)
+
+## contents
+- chen
+  ![](https://i.imgur.com/OnOvF2S.png)
+  The game has "while" to make itself work continuously and use "if else" to decise how to work with parametrics. There are some buttons contraling them  in the game. 
+  Before playing the game, players can choose single or cooperative mold and get help by use "set".
+  When the game start, platers can cleared see role's left boold. If they get some new weapons by eating coconuts, the bollet limit of new weapons will disolay on the top of role. The game end when all roles died and there are more than 30 enemys on the map to avoid the computer crashes.
+  If players want to look at their score, press down "score" after gameover. The top ten of the scores will be recorded and the record can be clear conveniently. If players want to play again, press down "again".

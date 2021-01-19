@@ -57,7 +57,7 @@
   
 - ChiaLingWeng
 
-  ![](https://i.imgur.com/map_demo.png)
+  ![](https://github.com/PythonFinalProject/OurGame/issues/7#issue-789047221)
   
   There are 3 different types of objects in our maps, Stone, Proof and Block.
   

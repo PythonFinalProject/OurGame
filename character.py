@@ -70,7 +70,7 @@ class Player(Character):
     def __init__(self, x, y, width, height, name):
         super().__init__(x, y, width, height)
         self.right = True
-        self.set_hitbox(15, 5, self.width-35, self.height-10)
+        self.set_hitbox(15, 15, self.width-35, self.height-10)   #y_offset = 5 --> 15 Through the slit
         self.DIR = 4
         self.STEP = 9
         self.extract_from_sprite_sheet('materials/blue_woman_sprite.png', self.DIR, self.STEP)
@@ -92,8 +92,8 @@ class Player(Character):
         self.name = name
         self.status = ["normal"]   # the status low
         self.weapon_dict = WEAPON_DICT
-        self.weapon_bullet = {"1.pistol":-1}
-        self.b = []
+        self.weapon_bullet = {"1.pistol":-1}  #recode the number of weapon bullets. -1 mean unlimited.
+        
 
     def control(self, run, map_width, map_height, num_player):
         keys = pygame.key.get_pressed()
@@ -164,12 +164,10 @@ class Player(Character):
                 self.shootAvailabe = False
 
         if keys[player_control["switch"]]:
-            print(self.weapon_list)
             if self.switchLoop == 0:
                 self.switchAvailabe = False
                 if self.weapon != self.weapon_list[-1]:
                     self.weapon= self.weapon_list[self.weapon_list.index(self.weapon)+1]
-
                 else:
                     self.weapon = self.weapon_list[0]
                         
@@ -233,15 +231,11 @@ class Player(Character):
                 facing[1] = -1
             elif self.down:
                 facing[1] = 1
-            if self.weapon != "1.pistol":
+            if self.weapon != "1.pistol":  #bullet is limited except pistol.
                 self.weapon_bullet[self.weapon] -= 1
-                print(self.weapon_bullet[self.weapon])
-                if self.weapon_bullet[self.weapon] == 0:
-                    print(self.weapon_list)                   
+                if self.weapon_bullet[self.weapon] == 0:                  
                     if self.weapon != "1.pistol":
-                        self.b.append(self.weapon)
                         self.weapon_list.remove(self.weapon)
-                        print(self.weapon_list)
                     self.weapon = "1.pistol"
                     
             # if (self.right or self.left) and (self.up or self.down):
@@ -258,8 +252,8 @@ class Enemy(Character):
         self.extract_from_sprite_sheet('materials/skull_sprite.png', 4, 9)
         self.velx = 1
         self.vely = 1 
-        #pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
-        pygame.time.set_timer(CREATE_ENEMY_EVENT,5000)
+        pygame.time.set_timer(CREATE_ENEMY_EVENT,max(1000-difficult*5,500)) # Create enemy every 1-score*5/1000 sec, 
+        #pygame.time.set_timer(CREATE_ENEMY_EVENT,5000)
         # pygame.time.set_timer(CREATE_ENEMY_EVENT, 50)
 
     def chase(self, player):
@@ -394,7 +388,8 @@ class Coconut():
         self.surprise_list = ["revert walking", "super man", "add shotgun", "add bomb", "add missle", "healing", "enemy_stop", "enemy_fast"]
         pygame.time.set_timer(CREATE_COCONUT_EVENT, 5000)
         self.hitbox = (self.x + self.offset, self.y + self.offset, self.width - 2*self.offset, self.height - 2*self.offset)
-
+        self.twiceget = False   # if this is True, the bullet will not be compled even if get surprisepack.
+        
     def read_image(self):
         img = pygame.image.load('./materials/coconut.png')
         self.img = pygame.transform.scale(img, (self.width, self.height))
@@ -403,7 +398,11 @@ class Coconut():
         self.ignited = True
         self.tracked_player = player
         self.surprise = random.choice(self.surprise_list)
-        self.SURPRISE_TIME_TICK = 300
+        all_weapon_list = ["add shotgun", "add bomb", "add missle"] 
+        if self.surprise not in all_weapon_list:   #避免武器可用兩次bug
+            self.SURPRISE_TIME_TICK = 300
+        else:
+            self.SURPRISE_TIME_TICK = 120
         self.surprise_count = 0
         self.update_surprise(enemy_list)
     
@@ -432,26 +431,29 @@ class Coconut():
         elif self.surprise == "add shotgun":
             if "2.shotgun" not in self.tracked_player.weapon_list:
                 self.tracked_player.weapon_list.append("2.shotgun")
-                print("aaa")
                 self.tracked_player.weapon_list.sort()
-                self.tracked_player.weapon_bullet["2.shotgun"] = self.tracked_player.weapon_dict["2.shotgun"]['bullet_total']
-                
+                self.tracked_player.weapon_bullet["2.shotgun"] = self.tracked_player.weapon_dict["2.shotgun"]['bullet_total'] #bullet limit
+                self.twiceget = True
+            elif "2.shotgun" in self.tracked_player.weapon_list and self.twiceget == False:  #bullet complement 
+                self.tracked_player.weapon_bullet["2.shotgun"] = self.tracked_player.weapon_dict["2.shotgun"]['bullet_total']    
         
         elif self.surprise == "add bomb":
             if "3.bomb" not in self.tracked_player.weapon_list:
                 self.tracked_player.weapon_list.append("3.bomb")
-                print("aaa")
                 self.tracked_player.weapon_list.sort()
+                self.tracked_player.weapon_bullet["3.bomb"] = self.tracked_player.weapon_dict["3.bomb"]['bullet_total']#bullet limit
+                self.twiceget = True
+            elif "3.bomb" in self.tracked_player.weapon_list and self.twiceget == False:  #bullet complement
                 self.tracked_player.weapon_bullet["3.bomb"] = self.tracked_player.weapon_dict["3.bomb"]['bullet_total']
-                
         
         elif self.surprise == "add missle":
             if "4.missle" not in self.tracked_player.weapon_list:
-                print("aaa")
                 self.tracked_player.weapon_list.append("4.missle")
                 self.tracked_player.weapon_list.sort()
-                self.tracked_player.weapon_bullet["4.missle"] = self.tracked_player.weapon_dict["4.missle"]['bullet_total']
-                
+                self.tracked_player.weapon_bullet["4.missle"] = self.tracked_player.weapon_dict["4.missle"]['bullet_total']#bullet limit
+                self.twiceget = True
+            elif "4.missle" in self.tracked_player.weapon_list and self.twiceget == False:  #bullet complement
+                self.tracked_player.weapon_bullet["4.missle"] = self.tracked_player.weapon_dict["4.missle"]['bullet_total']   
         
         elif self.surprise == "healing":
             if "healing" not in self.tracked_player.status:
@@ -528,8 +530,8 @@ class Button():
         if x1 >= self.ps[0] and x1 <= self.ps[0]+self.size[0] and y1 >= self.ps[1] and y1 <=self.ps[1]+self.size[1]:
             return True
 WEAPON_DICT = {
-    "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':-10},
-    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15], 'bullet_total':10},
-    "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':10},
-    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6], 'bullet_total':10}
+    "1.pistol" :{'damage': 1,'bullet_count': 1, 'vel': 5, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':-1},
+    "2.shotgun" : {'damage': 3,'bullet_count': 3, 'vel': 8, 'bullet_radius': 4, 'bullet_rotate': [-15,15], 'bullet_total':30},
+    "3.bomb" : {'damage': 1,'bullet_count': 1, 'vel': 0, 'bullet_radius': 6, 'bullet_rotate': [0,0], 'bullet_total':20},
+    "4.missle" : {'damage': 1, 'bullet_count': 2, 'vel': 5, 'bullet_radius': 4, 'bullet_rotate': [-5, 6], 'bullet_total':50}
     }

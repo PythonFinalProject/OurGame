@@ -7,7 +7,6 @@ from tilemap import *
 import pandas as pd 
 import csv
 
-
 win_width = 480
 win_height = 480
 map_width = 896 
@@ -193,22 +192,26 @@ while to_run:
 
         for coconut in coconut_list:
             coconut.draw(map_img)
-
+        
+        def drawScoreandBullet(abovecolor, belowcolor, x, y, remain, total): #畫血條和彈藥量
+            if remain != -1:
+                below = pygame.Surface((40,5))
+                below.convert()
+                below.fill(belowcolor)
+                map_img.blit(below, (x, y))
+                above = pygame.Surface((int(40*remain/total),5))
+                above.convert()
+                above.fill(abovecolor)
+                map_img.blit(above, (x, y))
+            else:
+                pass
+            
         for player in player_list:
             player.draw(map_img)
-            if player.health > 0:  #生命歸零時不畫出角色血量 
-                health_bg1 = pygame.Surface((40,5))  #血條大小
-                health_bg1.convert()
-                health_bg1.fill((255,0,0))
-                map_img.blit(health_bg1, (player.x+10, player.y))
-                health_bg2 = pygame.Surface((int(40*player.health/player.healthmax),5))  #血條大小
-                health_bg2.convert()
-                health_bg2.fill((0,255,0))
-                map_img.blit(health_bg2, (player.x+10, player.y))
-                #win.blit(health_bg, (player.x+10, player.y))
-                #pygame.draw.rect(health_bg, (0,255,0), [0,0,100,100], 20)   #打不出來...
-                #pygame.draw.circle(health_bg,(0,255,0),(30,30),20,0)
-                
+            if player.health > 0:  #生命歸零時不畫出角色
+                drawScoreandBullet((0,255,0), (255,0,0), player.x+10, player.y, player.health, player.healthmax)
+                drawScoreandBullet((0,255,255), (255,0,255), player.x+10, player.y-10, player.weapon_bullet[player.weapon], player.weapon_dict[player.weapon]['bullet_total']) 
+
                 if len(player.status) == 1:
                     player_status = player.status[0]
                 else:
@@ -342,11 +345,15 @@ while to_run:
             #if collision == False:
                 # if first.target not in target_player:
                 #     first.target = choice(target_player)
-            if first.target not in player_list:
-                first.target = choice(player_list)
-            if len(player_list) != 0:
-                # first.chase(player_list[first.target])
-                first.chase(first.target)
+            try:
+                if first.target not in player_list:
+                    first.target = choice(player_list)
+                if len(player_list) != 0:
+                    # first.chase(player_list[first.target])
+                    first.chase(first.target)
+            except IndexError:
+                print("IndexError on first.target")
+                run[0] = False
 
     def playerUpdate(player_list):
         for player in player_list:
@@ -374,6 +381,7 @@ while to_run:
                 if coconut.surprise_count > coconut.SURPRISE_TIME_TICK:
                     coconut.remove_surprise(enemy_list)
                     coconut_list.pop(coconut_list.index(coconut))
+                    coconut.twice = False
 
     p_time = 0  #暫停按下次數
     p_cool = 0  #暫停冷卻時間
@@ -399,17 +407,22 @@ while to_run:
                 break
                 pygame.quit()
             elif event.type == CREATE_ENEMY_EVENT and pause == False:
-                # This will create enemy every 1-score*5/1000 sec
-                enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
-                e = False
-                for enemy in enemy_list:
-                    if enemy.velx == 0 and enemy.vely == 0:
-                        e = True
-                        break
-                if e ==False:
-                    enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
-                enemy_list[-1].target = choice(player_list)
-                # enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+                try:
+                    # This will create enemy every 1-score*5/1000 sec
+                    enemy_spawn_x, enemy_spawn_y= random.choice(enemy_nest)
+                    is_stops = False   #if enemy stops, don't append new enemy.
+                    for enemy in enemy_list:
+                        if enemy.velx == 0 and enemy.vely == 0:
+                            is_stops = True
+                            break
+                    if is_stops ==False:
+                        enemy_list.append(Enemy( enemy_spawn_x, enemy_spawn_y, 576//9, 256//4, oldscore))                
+                    enemy_list[-1].target = choice(player_list)
+                    # enemy_list[-1].target = random.randrange(0, len(player_list), 1)
+                except IndexError:
+                    print("IndexError on CREATE_ENEMY_EVENT")
+                    run[0] = False
+                    
             elif event.type == CREATE_COCONUT_EVENT and pause == False:
                 coconut_list.append(Coconut(random.randrange(64, map_width-64, 1), random.randrange(64, map_height-64, 1)))
             

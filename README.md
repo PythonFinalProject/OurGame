@@ -24,7 +24,9 @@
     - This is where we run the main loop
     - Currently the FPS of the game is set to 60
  - character.py:
-    - We build class Charater, Player, Enemy, and Bullet. Notice that classes Player and Enemy are inharitted from class Character
+    - We build class Charater, Player, Enemy, Bullet and Coconut. Notice that classes Player and Enemy are inharitted from class Character
+ - tilemap.py:
+    - Where we build class related to the background map, Tiledmap, Camera, Obstacle, Proof and Block. 
 
 
 ## Bug and Problem report
@@ -45,10 +47,10 @@
 
   ![](https://i.imgur.com/OnOvF2S.png)
   
-  The game has "while" to make itself work continuously and use "if else" to decise how to work with parametrics. There are some buttons contraling them  in the game. 
+  Before starting the main game loop, we create a game interface to enhance user's gameplay experience.  
   
-  Before playing the game, players can choose single or cooperative mold and get help by use "set".
+  For example, players can choose either single or cooperative mode or get help by clicking Set button.
   
-  When the game start, platers can cleared see role's left boold. If they get some new weapons by eating coconuts, the bollet limit of new weapons will disolay on the top of role. The game end when all roles died and there are more than 30 enemys on the map to avoid the computer crashes.
+  After the game starts, some basic game information are displayed on the game window, for example, players' health, current weapon, and the bullet left for special weapon (So don't relax even if you get really strong weapon!). The game ends if all the players died or more than 30 enemies appear on the map (Notice the "Warning" for the latter).
   
-  If players want to look at their score, press down "score" after gameover. The top ten of the scores will be recorded and the record can be clear conveniently. If players want to play again, press down "again".
+  Another game interface design is displayed if the game ends. The Score button displayed the top ten highest scores recorded(automatically) and the record can be clear if you want a brandnew start :) Press "Again" to restart a game.

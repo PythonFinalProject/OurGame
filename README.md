@@ -57,7 +57,7 @@
   
 - ChiaLingWeng
 
-  ![](https://imgur.com/a/dppCCTI)
+  ![](https://imgur.com/NuBjZtA)
   
   There are 3 different types of objects in our maps, Stone, Proof and Block.
   

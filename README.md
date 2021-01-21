@@ -24,7 +24,9 @@
     - This is where we run the main loop
     - Currently the FPS of the game is set to 60
  - character.py:
-    - We build class Charater, Player, Enemy, and Bullet. Notice that classes Player and Enemy are inharitted from class Character
+    - We build class Charater, Player, Enemy, Bullet and Coconut. Notice that classes Player and Enemy are inharitted from class Character
+ - tilemap.py:
+    - Where we build class related to the background map, Tiledmap, Camera, Obstacle, Proof and Block. 
 
 
 ## Bug and Problem report
@@ -39,3 +41,33 @@
 
 - PNG warning (12/21):
     - Previouly everytime Nelson created character using the png file "blue_woman_sprite.png" and "skull_sprite.png", the command window would print out warning message: "libpng warning: iCCP: known incorrect sRGB profile". This issue was caused because Libpng-1.6 is more stringent about checking ICC profiles than previous versions. We can ignore the warning. To get rid of it, remove the iCCP chunk from the PNG image by running the command "mogrify *.png" (Nelson ran it in WSL2 device, might not be able to run in Windows powershell)
+
+## contents
+- chen
+
+  ![](https://i.imgur.com/OnOvF2S.png)
+  
+  Before starting the main game loop, we create a game interface to enhance user's gameplay experience.  
+  
+  For example, players can choose either single or cooperative mode or get help by clicking Set button.
+  
+  After the game starts, some basic game information are displayed on the game window, for example, players' health, current weapon, and the bullet left for special weapon     (So don't relax even if you get really strong weapon!). The game ends if all the players died or more than 30 enemies appear on the map (Notice the "Warning" for the         latter) .
+  
+  Another game interface design is displayed if the game ends. The Score displayed the top ten highest scores recorded (the score are recorded automatically) and users can     easily reset the score record if they want. Click "Again" to restart a game.
+  
+- ChiaLingWeng
+
+  ![](https://imgur.com/NuBjZtA)
+  
+  There are 3 different types of objects in our maps, Stone, Proof and Block.
+  
+  -Stone:
+  It acts as an obstacle for Characters moving on x axis, but an accelerating tunnel for Characters moving on y axis. 
+  
+  -Proof:
+  Just as literally, this kind of object is bullet-proof and the bullet will disappear after colliding with it.
+  
+  -Block:
+  Different from Stone, Characters can't pass it from any direction, but it's destroyable with bullet.
+
+

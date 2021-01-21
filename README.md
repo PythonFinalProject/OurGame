@@ -1,11 +1,4 @@
-# OurGame - The 
-
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+# OurGame - The ZombiNTU
 
 Hi there! This is our final project of the course EE1004 Computer Programming at the National Taiwan University. We created this game using the programming language Python and the game-design module Pygame. Hope you will like it
 

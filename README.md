@@ -1,9 +1,9 @@
 # OurGame - The ZombiNTU
 
-Hi there! This is our final project of the course EE1004 Computer Programming at the National Taiwan University. We created this game using the programming language Python and the game-design module Pygame. Hope you will like it
+Hi there! This is our final project of the course EE1004 Computer Programming at National Taiwan University (NTU). We created this game using the programming language Python and the game-design module Pygame. Hope you will like it!
 
 ## Story
-ZombiNTU is a survival horror video game featuring the elements at NTU (National Taiwan University). The game's story revolves around the students life at the time of 2050, where the campus was occupied by a tons of zombies after the a massive invasion in 2020. According to the last message sent from humans back then, the zombies climb out from brown underground tunnels at the northwest and southeast corners. Also, the abundance of coconuts in the campus serve the only means for survival, it is said that there are weapons and magics inside. The predecessors already created some accelerating tunnels and shelter blocks in the campus, which provide you a way to hide or escape from the zombies. Be noticed that if the number of zombies exceed 30, the campus will collapse... You are our last hope to defend the territory and honor of NTU.
+ZombiNTU is a survival horror video game featuring the elements at NTU. The game's story revolves around the students life at the time of 2050, where the campus was occupied by a tons of zombies after the a massive invasion in 2020. According to the last message sent from humans back then, the zombies climb out from brown underground tunnels at the northwest and southeast corners. Also, the abundance of coconuts in the campus serve the only means for survival, it is said that there are weapons and magics inside. The predecessors already created some accelerating tunnels and shelter blocks in the campus, which provide you a way to hide or escape from the zombies. Be noticed that if the number of zombies exceed 30, the campus will collapse... You are our last hope to defend the territory and honor of NTU.
 
 ![](https://i.imgur.com/UWpPnSS.png)
 
@@ -11,18 +11,22 @@ ZombiNTU is a survival horror video game featuring the elements at NTU (National
 ```
 .
 ├── README.md
-├── __pycache__
-│   ├── character.cpython-36.pyc
-│   └── character.cpython-38.pyc
 ├── character.py
+├── tilemap.py
 ├── main.py
-├── main_test.py
 ├── materials
-│   ├── bg.jpg
-│   ├── blue_woman_sprite.png
-│   └── skull_sprite.png
-└── source.md
+└── score.csv
 ```
+
+## Dependent python libraries
+numpy == 1.19.5
+pandas == 1.2.0
+pygame == 2.0.1
+python-dateutil == 2.8.1
+PyTMX == 3.24
+pytz == 2020.5
+six == 1.15.0
+
 ## Code description
  - main.py:
     - This is where we run the main loop
@@ -31,6 +35,13 @@ ZombiNTU is a survival horror video game featuring the elements at NTU (National
     - We build class Charater, Player, Enemy, Bullet and Coconut. Notice that classes Player and Enemy are inharitted from class Character
  - tilemap.py:
     - Where we build class related to the background map, Tiledmap, Camera, Obstacle, Proof and Block. 
+ - materials:
+    - Where we store the game images, including characters' sprite sheets, background picture, and so on
+
+## Game instruction
+1. `git clone https://github.com/PythonFinalProject/OurGame.git`
+2. Run the main.py and you will have a pop up window.
+3. If you need any assist during the game, click SET and then HELP on the game window.
 
 
 ## Bug and Problem report
@@ -46,7 +57,7 @@ ZombiNTU is a survival horror video game featuring the elements at NTU (National
 - PNG warning (12/21):
     - Previouly everytime Nelson created character using the png file "blue_woman_sprite.png" and "skull_sprite.png", the command window would print out warning message: "libpng warning: iCCP: known incorrect sRGB profile". This issue was caused because Libpng-1.6 is more stringent about checking ICC profiles than previous versions. We can ignore the warning. To get rid of it, remove the iCCP chunk from the PNG image by running the command "mogrify *.png" (Nelson ran it in WSL2 device, might not be able to run in Windows powershell)
 
-## Contents
+## Game detail information
 - chen
 
   ![](https://i.imgur.com/OnOvF2S.png)
@@ -73,5 +84,6 @@ ZombiNTU is a survival horror video game featuring the elements at NTU (National
   
   -Block:
   Different from Stone, Characters can't pass it from any direction, but it's destroyable with bullet.
+  
 
 

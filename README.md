@@ -1,7 +1,18 @@
-# OurGame
+# OurGame - The 
 
-## Quick View
-![](https://i.imgur.com/zZ4BIQO.png)
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+Hi there! This is our final project of the course EE1004 Computer Programming at the National Taiwan University. We created this game using the programming language Python and the game-design module Pygame. Hope you will like it
+
+## Story
+ZombiNTU is a survival horror video game featuring the elements at NTU (National Taiwan University). The game's story revolves around the students life at the time of 2050, where the campus was occupied by a tons of zombies after the a massive invasion in 2020. According to the last message sent from humans back then, the zombies climb out from brown underground tunnels at the northwest and southeast corners. Also, the abundance of coconuts in the campus serve the only means for survival, it is said that there are weapons and magics inside. The predecessors already created some accelerating tunnels and shelter blocks in the campus, which provide you a way to hide or escape from the zombies. Be noticed that if the number of zombies exceed 30, the campus will collapse... You are our last hope to defend the territory and honor of NTU.
+
+![](https://i.imgur.com/UWpPnSS.png)
 
 ## File structure
 ```
@@ -42,7 +53,7 @@
 - PNG warning (12/21):
     - Previouly everytime Nelson created character using the png file "blue_woman_sprite.png" and "skull_sprite.png", the command window would print out warning message: "libpng warning: iCCP: known incorrect sRGB profile". This issue was caused because Libpng-1.6 is more stringent about checking ICC profiles than previous versions. We can ignore the warning. To get rid of it, remove the iCCP chunk from the PNG image by running the command "mogrify *.png" (Nelson ran it in WSL2 device, might not be able to run in Windows powershell)
 
-## contents
+## Contents
 - chen
 
   ![](https://i.imgur.com/OnOvF2S.png)

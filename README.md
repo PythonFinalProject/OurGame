@@ -19,13 +19,13 @@ ZombiNTU is a survival horror video game featuring the elements at NTU. The game
 ```
 
 ## Dependent python libraries
-numpy == 1.19.5
-pandas == 1.2.0
-pygame == 2.0.1
-python-dateutil == 2.8.1
-PyTMX == 3.24
-pytz == 2020.5
-six == 1.15.0
+numpy == 1.19.5  
+pandas == 1.2.0  
+pygame == 2.0.1  
+python-dateutil == 2.8.1  
+PyTMX == 3.24  
+pytz == 2020.5  
+six == 1.15.0  
 
 ## Code description
  - main.py:
